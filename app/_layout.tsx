@@ -122,7 +122,7 @@ function RootLayoutNav() {
         }}
       />
       <Stack.Screen
-        name="(modals)/onboardingA"
+        name="(modals)/onboarding"
         options={{
           title: "Let's get started",
           headerShown: false, // Add this
