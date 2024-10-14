@@ -5,7 +5,7 @@ import ExploreHeader from "@/components/ExploreHeader";
 import Agencies from "@/components/Services";
 import { useEffect, useState } from "react";
 import listingsData from "@/assets/data/airbnb-listings.json";
-import elderCareFacilities from "@/constants/data/Elder_Care_Facilities.geojson";
+import elderCareFacilities from "@/assets/data/elder-care-facilities.json";
 
 import ServicesMap from "@/components/ServicesMap";
 import { createClient } from "@supabase/supabase-js";
@@ -25,8 +25,10 @@ const Page = () => {
   const refresh = params?.refresh;
   const [category, setCategory] = useState<string | null>(null);
 
-  const [items, setItems] = useState<any>([]);
-  // get geojson data
+  // get geojson data from the file
+  const [services, setAgencies] = useState<any>(
+    elderCareFacilities.layers[0]?.features || []
+  );
 
   const [userDetails, setUserDetails] = useState<any>([]);
   const [loadingUser, setLoadingUser] = useState(true);
@@ -51,8 +53,10 @@ const Page = () => {
     console.log("CHANGED_ ", category);
     setCategory(category);
   };
-
-  const services = items;
+  // use effect that console.logs the services
+  useEffect(() => {
+    console.log("SERVICES_ ", services.length);
+  }, [services]);
 
   return (
     <View style={{ flex: 1, marginTop: 65 }}>
@@ -62,11 +66,10 @@ const Page = () => {
         }}
       ></Stack.Screen>
       <ServicesMap services={services} />
-
-      {/* <AgenciesBottomSheet
-        agencies={agencies}
+      <AgenciesBottomSheet
+        agencies={services}
         category={category}
-      ></AgenciesBottomSheet> */}
+      ></AgenciesBottomSheet>
     </View>
   );
 };
