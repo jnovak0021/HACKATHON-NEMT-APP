@@ -1,67 +1,27 @@
 export interface Geometry {
-  type: string;
-  coordinates: number[];
+  x: number;
+  y: number;
 }
 
-export interface Properties {
-  objectid: number;
-  facilitytype: string;
-  facilitynumber: number;
-  facilityname: string;
-  licensee: string;
-  facilityemail: string | null;
-  facilityadministrator: string;
-  facilitytelephonenumber: string;
-  facilityaddress: string;
-  facilitycity: string;
-  facilitystate: string;
-  facilityzip: number;
-  countyname: string;
-  regionaloffice: number;
-  facilitycapacity: number;
-  facilitystatus: string;
-  licensefirstdate: number;
-  closeddate: number | null;
-  lastvisitdate: number;
-  inspectionvisits: number;
-  complaintvisits: number;
-  othervisits: number;
-  totalvisits: number;
-  citationnumbers: string | null;
-  pocdates: string | null;
-  allvisitdates: string | null;
-  inspectionvisitdates: string | null;
-  inspecttypea: number;
-  inspecttypeb: number;
-  othervisitdates: string | null;
-  othertypea: number;
-  othertypeb: number;
-  complainttypea: number;
-  complainttypeb: number;
-  totalallegations: number;
-  inconclusiveallegations: number;
-  substantiatedallegations: number;
-  unsubstantiatedallegations: number;
-  unfoundedallegations: number;
-  complaintinfo: string | null;
-  point_x: number;
-  point_y: number;
+export interface Attributes {
+  id: number; // Can be facility number or oshpd_id
+  name: string;
+  type: string; // Facility type or hospital type (e.g., "General Acute Care Hospital", "RCFE-CONTINUING CARE RETIREMENT COMMUNITY")
+  address: string;
+  city: string;
+  state: string;
+  zip: string;
+  phoneNumber?: string; // Optional, since some data might not have it
+  capacity?: number; // Optional, since hospitals and elder care may have different capacity definitions
+  x: number; // Longitude
+  y: number; // Latitude
 }
 
 export interface Feature {
-  type: string;
-  id: number;
   geometry: Geometry;
-  properties: Properties;
+  attributes: Attributes;
 }
 
-export interface FeatureCollection {
-  type: string;
-  crs: {
-    type: string;
-    properties: {
-      name: string;
-    };
-  };
-  features: Feature[];
+export interface ElderFacilities {
+  services: Feature[]; // Use the Feature array as the type for services
 }

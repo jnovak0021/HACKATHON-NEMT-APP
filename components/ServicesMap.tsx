@@ -1,5 +1,5 @@
 import { View, Text } from "react-native";
-import React, { useEffect } from "react";
+import React from "react";
 import { Marker } from "react-native-maps";
 import { StyleSheet } from "react-native";
 import { defaultStyles } from "@/constants/Styles";
@@ -7,56 +7,33 @@ import { useRouter } from "expo-router";
 import MapView from "react-native-map-clustering";
 import Colors from "@/constants/Colors";
 import proj4 from "proj4";
-
-interface Geometry {
-  x: number;
-  y: number;
-}
-
-interface Attributes {
-  objectid: number;
-  facilityname: string;
-  // Add other attributes as needed
-}
-
-interface Feature {
-  geometry: Geometry;
-  attributes: Attributes;
-}
-
-interface Layer {
-  id: number;
-  features: Feature[];
-}
-
-interface Props {
-  services: Feature[]; // Use the Feature array as the type for services
-}
+import { ElderFacilities, Feature } from "@/interfaces/service";
 
 const INITIAL_REGION = {
   latitude: 32.78825,
   longitude: -117.4324,
-  latitudeDelta: 9,
-  longitudeDelta: 9,
+  latitudeDelta: 40,
+  longitudeDelta: 40,
 };
+
 // Define the projection for the input coordinates (e.g., UTM Zone 33N)
 const inputProjection =
   "+proj=lcc +lat_1=33.88333333333333 +lat_2=32.78333333333333 +lat_0=32.16666666666666 +lon_0=-116.25 +x_0=2000000.0001016 +y_0=500000.0001016001 +datum=NAD83 +units=us-ft +no_defs";
 // Define the projection for the output coordinates (WGS84)
 const outputProjection = "EPSG:4326";
-const ServicesMap = ({ services }: Props) => {
-  const router = useRouter();
-  console.log(services.length);
-  // log shape of services
-  console.log(services[0]);
 
-  const onMarkerSelected = (agency: Feature) => {
-    router.push(`/service/${agency.attributes.objectid}`); // Use the unique objectid from attributes
+const ServicesMap = ({ services }: ElderFacilities) => {
+  const router = useRouter();
+
+  const onMarkerSelected = (service: Feature) => {
+    router.push(`/service/${service.attributes.id}`);
   };
 
   const renderCluster = (cluster: any) => {
     const { id, geometry, onPress, properties } = cluster;
     const points = properties.point_count;
+
+    console.log("Cluster Rendered: ", cluster);
 
     return (
       <Marker
@@ -67,19 +44,17 @@ const ServicesMap = ({ services }: Props) => {
           latitude: geometry.y,
         }}
       >
-        <View style={styles.marker}>
-          <Text
-            style={{
-              color: "#000",
-              textAlign: "center",
-              fontFamily: "mon-sb",
-            }}
-          >
-            {points}
-          </Text>
+        <View style={styles.clusterMarker}>
+          <Text style={styles.clusterText}>{points}</Text>
         </View>
       </Marker>
     );
+  };
+
+  const getMarkerColor = (service: Feature) => {
+    return service.attributes.type === "Hospital"
+      ? Colors.hospitalColor
+      : Colors.elderCareColor;
   };
 
   return (
@@ -93,26 +68,40 @@ const ServicesMap = ({ services }: Props) => {
         clusterColor={Colors.primary}
         clusterFontFamily="mon-sb"
       >
-        {services.map((service: Feature) => {
-          // Convert the coordinates
+        {services.map((service: Feature, index: number) => {
+          // Convert the coordinates and log the output
           const [longitude, latitude] = proj4(
             inputProjection,
             outputProjection,
             [service.geometry.x, service.geometry.y]
           );
+
+          // Log coordinates to check if they are valid
+          console.log(
+            `Service #${index} (${service.attributes.name}) coordinates:`,
+            {
+              latitude,
+              longitude,
+            }
+          );
+
           return (
             <Marker
-              key={service.attributes.objectid}
+              key={service.attributes.id}
               onPress={() => onMarkerSelected(service)}
               coordinate={{
-                latitude, // Converted latitude
-                longitude, // Converted longitude
+                latitude,
+                longitude,
               }}
+              pinColor={getMarkerColor(service)}
             >
-              <View style={styles.marker}>
-                <Text style={styles.markerText}>
-                  {service.attributes.facilityname}
-                </Text>
+              <View
+                style={[
+                  styles.marker,
+                  { backgroundColor: getMarkerColor(service) },
+                ]}
+              >
+                <Text style={styles.markerText}>{service.attributes.name}</Text>
               </View>
             </Marker>
           );
@@ -126,8 +115,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
-
-  marker: {
+  clusterMarker: {
     padding: 8,
     alignItems: "center",
     justifyContent: "center",
@@ -142,18 +130,17 @@ const styles = StyleSheet.create({
       height: 10,
     },
   },
-  markerText: {
+  clusterText: {
     fontSize: 14,
     fontFamily: "mon-sb",
+    color: "#000",
   },
-  locateBtn: {
-    position: "absolute",
-    top: 70,
-    right: 20,
-    backgroundColor: "#fff",
-    padding: 10,
-    borderRadius: 10,
-    elevation: 2,
+  marker: {
+    padding: 8,
+    alignItems: "center",
+    justifyContent: "center",
+    elevation: 5,
+    borderRadius: 12,
     shadowColor: "#000",
     shadowOpacity: 0.1,
     shadowRadius: 6,
@@ -161,6 +148,11 @@ const styles = StyleSheet.create({
       width: 1,
       height: 10,
     },
+  },
+  markerText: {
+    fontSize: 14,
+    fontFamily: "mon-sb",
+    color: "#FFFFFF",
   },
 });
 

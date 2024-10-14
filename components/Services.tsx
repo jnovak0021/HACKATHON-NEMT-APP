@@ -18,6 +18,7 @@ import Animated, { FadeOutLeft, FadeInRight } from "react-native-reanimated";
 import { useAuth } from "@clerk/clerk-react";
 import { createClient } from "@supabase/supabase-js";
 import Colors from "@/constants/Colors";
+import { ElderFacilities, Feature } from "@/interfaces/service";
 
 import {
   BottomSheetFlatList,
@@ -25,11 +26,11 @@ import {
 } from "@gorhom/bottom-sheet";
 
 interface Props {
-  agencies: any[];
+  services: Feature[] | [];
   category: string | null;
   refresh: number;
 }
-const Services = ({ agencies, category, refresh }: Props) => {
+const Services = ({ services = [], category, refresh }: Props) => {
   const [loading, setLoading] = useState(false);
   const [images, setImages] = useState<Record<string, string>>({});
   const listRef = useRef<BottomSheetFlatListMethods>(null);
@@ -50,16 +51,16 @@ const Services = ({ agencies, category, refresh }: Props) => {
     setLoading(false);
   }, [category]);
 
-  const renderRow: ListRenderItem<any> = ({ item }) => {
+  const renderRow: ListRenderItem<Feature> = ({ item }) => {
     return (
-      <Link href={`/service/${item.id}`} asChild>
+      <Link href={`/service/${item.attributes.objectid}`} asChild>
         <TouchableOpacity>
           <Animated.View
             style={styles.listing}
             entering={FadeInRight}
             exiting={FadeOutLeft}
           >
-            <Image source={{ uri: item.image_url }} style={styles.image} />
+            {/* <Image source={{ uri: item.attributes.complaintinfo }} style={styles.image} /> */}
 
             <TouchableOpacity
               style={{ position: "absolute", top: 30, right: 30 }}
@@ -74,12 +75,14 @@ const Services = ({ agencies, category, refresh }: Props) => {
               style={{ flexDirection: "row", justifyContent: "space-between" }}
             >
               <Text style={{ fontSize: 16, fontFamily: "mon-sb" }}>
-                {item.display_name}
+                {item.attributes.facilityname}
               </Text>
             </View>
             <View style={{ flexDirection: "row", gap: 4 }}>
               <Ionicons name="location" size={16}></Ionicons>
-              <Text style={{ fontFamily: "mon" }}>{item.display_location}</Text>
+              <Text style={{ fontFamily: "mon" }}>
+                {item.attributes.facilityaddress}
+              </Text>
             </View>
           </Animated.View>
         </TouchableOpacity>
@@ -92,9 +95,9 @@ const Services = ({ agencies, category, refresh }: Props) => {
       <BottomSheetFlatList
         ref={listRef}
         renderItem={renderRow}
-        data={loading ? [] : agencies}
+        data={loading ? [] : services}
         ListHeaderComponent={
-          <Text style={styles.info}>{agencies.length} agencies</Text>
+          <Text style={styles.info}>{services.length} services</Text>
         }
       ></BottomSheetFlatList>
     </View>

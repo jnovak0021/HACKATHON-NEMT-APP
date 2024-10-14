@@ -1,16 +1,16 @@
 import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 import React, { useMemo, useRef, useState } from "react";
 import BottomSheet from "@gorhom/bottom-sheet";
-import Agencies from "./Services";
+import Services from "./Services";
 import Colors from "@/constants/Colors";
 import { Ionicons } from "@expo/vector-icons";
 
 interface Props {
-  agencies: any[];
+  services: any[];
   category: string | null;
 }
 
-const ServicesBottomSheet = ({ agencies, category }: Props) => {
+const ServicesBottomSheet = ({ services, category }: Props) => {
   const bottomSheetRef = useRef<BottomSheet>(null);
   const snapPoints = useMemo(() => ["10%", "100%"], []);
   const [refresh, setRefresh] = useState(0);
@@ -30,11 +30,11 @@ const ServicesBottomSheet = ({ agencies, category }: Props) => {
       ref={bottomSheetRef}
     >
       <View style={{ flex: 1 }}>
-        <Agencies
-          agencies={agencies}
+        <Services
+          services={services}
           category={category}
           refresh={refresh + 1}
-        ></Agencies>
+        ></Services>
 
         <View style={styles.absoluteView}>
           <TouchableOpacity style={styles.btn} onPress={showMap}>
