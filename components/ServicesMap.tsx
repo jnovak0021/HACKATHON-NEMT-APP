@@ -1,16 +1,17 @@
 import { View, Text } from "react-native";
 import React from "react";
-import { Marker, PROVIDER_GOOGLE } from "react-native-maps";
+import { Marker } from "react-native-maps";
 import { StyleSheet } from "react-native";
 import { defaultStyles } from "@/constants/Styles";
-import { useEffect, useState, memo } from "react";
-import { createClient } from "@supabase/supabase-js";
 import { useRouter } from "expo-router";
 import MapView from "react-native-map-clustering";
 import Colors from "@/constants/Colors";
+import { Feature, Geometry } from "@/interfaces/service"; // Import the GeoJSON interfaces
+
 interface Props {
-  agencies: any;
+  services: Feature[]; // Use the Feature array as the type for services
 }
+
 const INITIAL_REGION = {
   latitude: 37.78825,
   longitude: -122.4324,
@@ -18,12 +19,15 @@ const INITIAL_REGION = {
   longitudeDelta: 9,
 };
 
-const ServicesMap = ({ agencies }: Props) => {
+const ServicesMap = ({ services }: Props) => {
   const router = useRouter();
 
-  const onMarkerSelected = (agency: any) => {
-    router.push(`/service/${agency.id}`);
+  const onMarkerSelected = (agency: Feature) => {
+    router.push(`/service/${agency.properties.objectid}`); // Use the unique objectid from properties
   };
+  if (!services || services.length === 0) {
+    return <Text>No services available</Text>;
+  }
 
   const renderCluster = (cluster: any) => {
     const { id, geometry, onPress, properties } = cluster;
@@ -64,17 +68,19 @@ const ServicesMap = ({ agencies }: Props) => {
         clusterColor={Colors.primary}
         clusterFontFamily="mon-sb"
       >
-        {agencies.map((agency: any) => (
+        {services.map((agency: Feature) => (
           <Marker
-            key={agency.id}
+            key={agency.properties.objectid}
             onPress={() => onMarkerSelected(agency)}
             coordinate={{
-              latitude: agency.latitude,
-              longitude: agency.longitude,
+              latitude: agency.geometry.coordinates[1], // Latitude is the second coordinate in GeoJSON
+              longitude: agency.geometry.coordinates[0], // Longitude is the first coordinate in GeoJSON
             }}
           >
             <View style={styles.marker}>
-              <Text style={styles.markerText}>{agency.display_name}</Text>
+              <Text style={styles.markerText}>
+                {agency.properties.facilityname}
+              </Text>
             </View>
           </Marker>
         ))}

@@ -5,7 +5,9 @@ import ExploreHeader from "@/components/ExploreHeader";
 import Agencies from "@/components/Services";
 import { useEffect, useState } from "react";
 import listingsData from "@/assets/data/airbnb-listings.json";
-import AgenciesMap from "@/components/ServicesMap";
+import elderCareFacilities from "@/constants/data/Elder_Care_Facilities.geojson";
+
+import ServicesMap from "@/components/ServicesMap";
 import { createClient } from "@supabase/supabase-js";
 import AgenciesBottomSheet from "@/components/ServicesBottomSheet";
 import { getUser } from "@/utils/supabaseRequests";
@@ -22,12 +24,12 @@ const Page = () => {
 
   const refresh = params?.refresh;
   const [category, setCategory] = useState<string | null>(null);
-  const items = useMemo(() => listingsData as any, []);
+
+  const [items, setItems] = useState<any>([]);
+  // get geojson data
 
   const [userDetails, setUserDetails] = useState<any>([]);
   const [loadingUser, setLoadingUser] = useState(true);
-  const [loading, setLoading] = useState(false);
-  // const [agencies, setAgencies] = useState<any[]>([]);
 
   const loadUser = async () => {
     try {
@@ -45,45 +47,13 @@ const Page = () => {
     }
   };
 
-  // useEffect(() => {
-  //   console.log("RELOAD LISTINGS_ ", items.length);
-  //   setLoading(true);
-
-  //   loadAgencies(category ?? undefined).then(() => setLoading(false));
-  // }, [category, refresh]);
-  // const loadAgencies = async (category?: string) => {
-  //   const supabase = await createClient(
-  //     "https://lqccaeeetnpeqczjqyqd.supabase.co",
-  //     "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxxY2NhZWVldG5wZXFjempxeXFkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MDQwNDU0MzEsImV4cCI6MjAxOTYyMTQzMX0.PKXx00j5tqis-HRRYJvTBFHLwWsPkYiTqHuIQcYkKCQ"
-  //   );
-
-  //   let query = supabase
-  //     .from("agencies")
-  //     .select("*")
-  //     .order("image", { ascending: true });
-  //   if (category) {
-  //     query = query.filter(
-  //       "categories",
-  //       "cs",
-  //       JSON.stringify([category.toLowerCase()])
-  //     );
-  //   }
-
-  //   let { data: agencies, error } = await query;
-
-  //   if (error) {
-  //     console.error("INDEX ERROR_ ", error);
-  //   } else if (agencies) {
-  //     console.log("AGENCIES_ ", agencies.length);
-  //     setAgencies(agencies);
-  //   }
-  // };
-
   const onDataChanged = (category: string) => {
     console.log("CHANGED_ ", category);
     setCategory(category);
   };
-  const agencies = items;
+
+  const services = items;
+
   return (
     <View style={{ flex: 1, marginTop: 65 }}>
       <Stack.Screen
@@ -91,12 +61,12 @@ const Page = () => {
           header: () => <ExploreHeader onCategoryChanged={onDataChanged} />,
         }}
       ></Stack.Screen>
-      <AgenciesMap agencies={agencies} />
+      <ServicesMap services={services} />
 
-      <AgenciesBottomSheet
+      {/* <AgenciesBottomSheet
         agencies={agencies}
         category={category}
-      ></AgenciesBottomSheet>
+      ></AgenciesBottomSheet> */}
     </View>
   );
 };
