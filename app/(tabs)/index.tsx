@@ -41,9 +41,9 @@ const Page = () => {
       name: facility.attributes.facilityname,
       type: "Elder Care",
       address: facility.attributes.facilityaddress,
-      city: facility.attributes.city,
-      state: facility.attributes.state,
-      zip: facility.attributes.zip,
+      city: facility.attributes.facilitycity,
+      state: facility.attributes.facilitystate,
+      zip: facility.attributes.facilityzip,
       phoneNumber: facility.attributes.facilityemail ?? undefined,
       capacity: facility.attributes.capacity ?? undefined,
       x: facility.geometry.x,
@@ -59,9 +59,9 @@ const Page = () => {
     attributes: {
       id: hospital.attributes.oshpd_id,
       name: hospital.attributes.facility_name,
-      type: "Hospital",
+      type: "Health Care",
       address: hospital.attributes.dba_address1,
-      city: hospital.attributes.city,
+      city: hospital.attributes.dba_city,
       state: hospital.attributes.state,
       zip: hospital.attributes.zip,
       phoneNumber: hospital.attributes.facility_email ?? undefined,
@@ -81,8 +81,6 @@ const Page = () => {
     const elderCareFacilitiesData =
       elderCareFacilities.layers[0]?.features || [];
     const hospitalsData = healthCareFacilities.layers[0]?.features || [];
-    console.log("ELDER CARE FACILITIES_ ", elderCareFacilitiesData[0]);
-
     const normalizedElderCareFacilities = elderCareFacilitiesData
       .map(normalizeElderCareFacility)
       .slice(0, 100); // limit to 100
@@ -91,8 +89,6 @@ const Page = () => {
       .map(normalizeHospital)
       .slice(0, 100);
     // randomize the order of the services
-    console.log("ELDER CARE FACILITIES_ ", normalizedElderCareFacilities[0]);
-
     const combinedList = [
       ...normalizedElderCareFacilities,
       ...normalizedHospitals,
@@ -101,6 +97,7 @@ const Page = () => {
   };
 
   const [services, setServices] = useState<Feature[]>(loadServices());
+  const [filteredServices, setFilteredServices] = useState<Feature[]>(services);
 
   const [userDetails, setUserDetails] = useState<any>([]);
   const [loadingUser, setLoadingUser] = useState(true);
@@ -128,6 +125,21 @@ const Page = () => {
   // use effect that console.logs the services
   useEffect(() => {
     console.log("SERVICES_ ", services.length);
+    console.log("FILTERED_SERVICES_ ", filteredServices.length);
+  }, [services]);
+
+  useEffect(() => {
+    if (category === "All" || category === null) {
+      setFilteredServices(services);
+    } else {
+      setFilteredServices(
+        services.filter((service) => service.attributes.type === category)
+      );
+    }
+  }, [category, services]);
+
+  useEffect(() => {
+    console.log("SERVICES_ ", services.length);
   }, [services]);
 
   return (
@@ -137,9 +149,9 @@ const Page = () => {
           header: () => <ExploreHeader onCategoryChanged={onDataChanged} />,
         }}
       ></Stack.Screen>
-      <ServicesMap services={services} />
+      <ServicesMap services={filteredServices} />
       <AgenciesBottomSheet
-        services={services}
+        services={filteredServices}
         category={category}
       ></AgenciesBottomSheet>
     </View>

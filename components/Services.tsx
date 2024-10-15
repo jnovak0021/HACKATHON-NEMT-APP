@@ -12,6 +12,13 @@ import { Ionicons } from "@expo/vector-icons";
 import Animated, { FadeOutLeft, FadeInRight } from "react-native-reanimated";
 import Colors from "@/constants/Colors";
 import { Feature } from "@/interfaces/service";
+import { useRouter } from "expo-router";
+import {
+  getMarkerColor,
+  getMarkerIcon,
+  ServiceType,
+} from "@/utils/serviceGraphics";
+
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import {
   BottomSheetFlatList,
@@ -23,36 +30,20 @@ interface Props {
   category: string | null;
   refresh: number;
 }
-const outputProjection = "EPSG:4326";
-type ServiceType = "Hospital" | "Elder Care"; // Add more types as needed
-
-const markerColors: Record<ServiceType, string> = {
-  Hospital: Colors.hospitalColor,
-  "Elder Care": Colors.elderCareColor,
-  // Add more types and their corresponding colors here
-};
-
-const markerIcons: Record<ServiceType, JSX.Element> = {
-  Hospital: <MaterialIcons name="local-hospital" size={40} color="white" />,
-  "Elder Care": <MaterialIcons name="elderly" size={40} color="white" />,
-  // Add more types and their corresponding icons here
-};
-const getMarkerColor = (service: Feature) => {
-  return markerColors[service.attributes.type as ServiceType] || Colors.grey; // Fallback to a default color if type is not found
-};
-
-const getMarkerIcon = (service: Feature) => {
-  return (
-    markerIcons[service.attributes.type as ServiceType] || (
-      <MaterialIcons name="help-outline" size={24} color="white" />
-    )
-  ); // Fallback to a default icon if type is not found
-};
-
 const Services = ({ services = [], category, refresh }: Props) => {
   const [loading, setLoading] = useState(false);
   const listRef = useRef<BottomSheetFlatListMethods>(null);
+  const router = useRouter();
 
+  const onRowSelected = (service: Feature) => {
+    // parse feature to json
+    const serviceString = JSON.stringify(service);
+    console.log(service);
+    router.push({
+      pathname: `/service/[id]`,
+      params: { id: service.attributes.id, service: serviceString },
+    });
+  };
   useEffect(() => {
     if (refresh) {
       console.log("REFRESH_");
@@ -69,8 +60,13 @@ const Services = ({ services = [], category, refresh }: Props) => {
   }, [category]);
 
   const renderRow: ListRenderItem<Feature> = ({ item }) => {
+    const serviceString = encodeURIComponent(JSON.stringify(item));
+    const href =
+      `/service/${item.attributes.id}?service=${serviceString}` as `/service/${number}?service=${string}`;
+    const serviceType = item.attributes.type as ServiceType;
+
     return (
-      <Link href={`/service/${item.attributes.id}`} asChild>
+      <Link href={href} asChild>
         <TouchableOpacity>
           <Animated.View
             style={styles.listing}
@@ -81,10 +77,10 @@ const Services = ({ services = [], category, refresh }: Props) => {
               <View
                 style={[
                   styles.iconBackground,
-                  { backgroundColor: getMarkerColor(item) },
+                  { backgroundColor: getMarkerColor(serviceType) },
                 ]}
               >
-                {getMarkerIcon(item)}
+                {getMarkerIcon(serviceType, 40)}
               </View>
               <View style={styles.textContainer}>
                 <Text style={styles.name}>{item.attributes.name}</Text>

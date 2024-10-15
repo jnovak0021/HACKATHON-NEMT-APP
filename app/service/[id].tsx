@@ -3,15 +3,13 @@ import {
   View,
   StyleSheet,
   Dimensions,
-  Image,
   TouchableOpacity,
   Share,
 } from "react-native";
 import { Linking } from "react-native";
-
-import React, { useLayoutEffect } from "react";
+import MapView, { Marker } from "react-native-maps";
+import React, { useLayoutEffect, useEffect, useState } from "react";
 import { Tabs, useLocalSearchParams, useNavigation } from "expo-router";
-import listingsData from "@/assets/data/airbnb-listings.json";
 import Colors from "@/constants/Colors";
 import { Ionicons } from "@expo/vector-icons";
 import Animated, {
@@ -22,284 +20,58 @@ import Animated, {
   useScrollViewOffset,
 } from "react-native-reanimated";
 import { defaultStyles } from "@/constants/Styles";
-import { createClient } from "@supabase/supabase-js";
-import { useEffect, useState } from "react";
-import { Agency } from "@/interfaces/service";
+import { Feature } from "@/interfaces/service";
 import { User } from "@/interfaces/user";
-import * as MailComposer from "expo-mail-composer";
-import * as Print from "expo-print";
-import { supabaseClient } from "@/utils/supabase";
-import {
-  updateUser,
-  getUser,
-  uploadPicture,
-  loadPicture,
-} from "@/utils/supabaseRequests";
-import { FileObject } from "@supabase/storage-js";
-import { useAuth, useUser } from "@clerk/clerk-react";
-import { set } from "react-hook-form";
+import { useAuth } from "@clerk/clerk-react";
+import proj4 from "proj4";
 
-const IMG_HEIGHT = 300;
+const IMG_HEIGHT = 400;
 const { width } = Dimensions.get("window");
 
-interface Props {
-  agency: Agency;
-}
+const inputProjection =
+  "+proj=lcc +lat_1=33.88333333333333 +lat_2=32.78333333333333 +lat_0=32.16666666666666 +lon_0=-116.25 +x_0=2000000.0001016 +y_0=500000.0001016001 +datum=NAD83 +units=us-ft +no_defs";
+const outputProjection = "EPSG:4326";
 
 const Page = () => {
-  const { id } = useLocalSearchParams<{ id: string }>();
-  const [agency, setAgency] = useState<Agency[]>([]);
-  const [userDetails, setUserDetails] = useState<User | null>(null);
+  const params = useLocalSearchParams();
+  const id = params.id as string;
+  let service: Feature | null = null;
 
+  try {
+    service = JSON.parse(params.service as string) as Feature;
+  } catch (error) {
+    console.error("Failed to parse service parameter:", error);
+  }
+
+  const [userDetails, setUserDetails] = useState<User | null>(null);
   const scrollRef = useAnimatedRef<Animated.ScrollView>();
   const navigation = useNavigation();
-
   const scrollOffset = useScrollViewOffset(scrollRef);
-
   const { signOut, isSignedIn, userId, getToken } = useAuth();
-
   const [loading, setLoading] = useState(true);
 
+  let latitude = 37.78825;
+  let longitude = -122.4324;
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const token = await getToken({ template: "supabase" });
-        const userData = await getUser({
-          userId: userId ?? "",
-          token: token ?? "",
-        });
-        if (userData) {
-          console.log(userData);
-          setUserDetails(userData);
-        }
-        const supabase = await supabaseClient(token || "");
-        const images = ["headshot.png", "side.png", "half.png", "full.png"];
-
-        const fetchImagePromises = images.map(async (imageName) => {
-          const { data } = await supabase.storage
-            .from("models")
-            .getPublicUrl(`${userId}/${imageName}`);
-          console.log(data);
-          return { name: imageName, url: data.publicUrl };
-        });
-
-        const imageUrlsList = await Promise.all(fetchImagePromises);
-        imageUrlsList.forEach(({ name, url }) => {
-          processImageUrl(name, url);
-        });
-      } catch (error) {
-        console.error("Error fetching data:", error);
-        setLoading(false);
-      }
-    };
-
-    fetchData();
-  }, [userId]); // Add userId as a dependency to rerun the effect when it changes
-
-  const processImageData = (name: string, data: Blob | null) => {
-    if (data !== null) {
-      const fr = new FileReader();
-      fr.readAsDataURL(data);
-      fr.onload = () => {
-        switch (name) {
-          case "headshot.png":
-            setHeadshot(fr.result as string);
-            break;
-          case "side.png":
-            setSide(fr.result as string);
-            break;
-          case "full.png":
-            setFull(fr.result as string);
-            break;
-          case "half.png":
-            setHalf(fr.result as string);
-            break;
-          default:
-            break;
-        }
-        setLoading(false);
-      };
-    }
-  };
-  function calculateAge(dob: Date): number {
-    const today = new Date();
-    const birthDate = new Date(dob);
-    let age = today.getFullYear() - birthDate.getFullYear();
-    const monthDiff = today.getMonth() - birthDate.getMonth();
-    if (
-      monthDiff < 0 ||
-      (monthDiff === 0 && today.getDate() < birthDate.getDate())
-    ) {
-      age--;
-    }
-    return age;
+  if (service) {
+    [longitude, latitude] = proj4(inputProjection, outputProjection, [
+      service.geometry.x,
+      service.geometry.y,
+    ]);
   }
-  const sendMail = async () => {
-    try {
-      const isMailAvailable = await MailComposer.isAvailableAsync();
 
-      if (isMailAvailable) {
-        const age = userDetails.dob ? calculateAge(userDetails.dob) : "Unknown";
-        const measure = userDetails?.measurement == "imperial" ? " in" : "cm";
-        const gender = userDetails?.gender == "male" ? "M" : "W";
-
-        const htmlContent = `
-        <style>
-        .grid-container {
-          display: grid;
-          grid-template-columns: auto auto;
-          gap: 10px;
-        }
-        .grid-item img {
-          width: 150px;
-          height: 150px;
-          object-fit: cover;
-        }
-      </style>
-      <p>Dear ${agency.display_name}, 
-</p>
-    <p>My name is ${userDetails.first_name} ${
-          userDetails.last_name
-        }. I am from ${userDetails.city?.name}, ${
-          userDetails.state?.state_code
-        } and I am ${age} years old.
-    I have an interest in modeling and I would love to be considered at your agency. Please refer to my digitals and measurements below.</p>
-
-
-  <div class="grid-container">
-    <div class="grid-item"><img src="${headshotUrl}" alt="Headshot" /></div>
-    <div class="grid-item"><img src="${sideUrl}" alt="Side" /></div>
-    <div class="grid-item"><img src="${fullUrl}" alt="Full" /></div>
-    <div class="grid-item"><img src="${halfUrl}" alt="Half" /></div>
-  </div>
-  <p>Look at the table below for my measurements:</p>
-  <table>
-    <tr>
-      <td>Height:</td>
-      <td>${userDetails.height} ${measure}</td>
-    </tr>
-    <tr>
-      <td>Weight:</td>
-      <td>${userDetails.weight} ${
-          userDetails.measurement == "imperial" ? " lbs" : "kgs"
-        }</td>
-    </tr>
-    <tr>
-      <td>Waist:</td>
-      <td>${userDetails.waist} ${measure}</td>
-    </tr>
-    <tr>
-      <td>Shoe size:</td>
-      <td>${userDetails.shoe} ${
-          userDetails.measurement == "imperial" ? " US" : "EU"
-        } ${gender}</td>
-    </tr>
-    <tr>
-      <td>Chest:</td>
-      <td>${userDetails.chest} ${measure}</td>
-    </tr>
-    <tr>
-      <td>Hair color:</td>
-      <td>${userDetails.hair}</td>
-    </tr>
-    <tr>
-      <td>Eye color:</td>
-      <td>${userDetails.eyes}</td>
-    </tr>
-    ${
-      gender == "M"
-        ? `   <tr>
-      <td>Shirt:</td>
-      <td>${userDetails.shirt} ${measure}</td>
-    </tr>
-    <tr>
-      <td>Sleeve Length:</td>
-      <td>${userDetails.sleeve} ${measure}</td>
-    </tr>
-    <tr>
-    <td>Inseam:</td>
-    <td>${userDetails.inseam} ${measure}</td>
-  </tr>`
-        : `   <tr>
-      <td>Hips:</td>
-      <td>${userDetails.hips} ${measure}</td>
-    </tr>
-    <tr>
-      <td>Dress:</td>
-      <td>${userDetails.dress} ${measure}</td>
-    </tr>
-    <tr>
-    <td>Cup Size:</td>
-    <td>${userDetails.cup}</td>
-  </tr>`
-    }
-  </table>
-  <p>Thank you so much for your consideration. I look forward to hearing from you!</p>
-  <p>Sincerely,</p>
-  <p>${userDetails.first_name} ${userDetails.last_name}</p>
-
-`;
-
-        await MailComposer.composeAsync({
-          subject: "Model Application from ModelMe",
-          body: htmlContent,
-          recipients: [agency.email],
-          isHtml: true, // Set isHtml to true to send HTML content
-        });
-      } else {
-        console.log("Mail composer is not available on this device.");
-      }
-    } catch (error) {
-      console.error("Error sending email:", error);
-    }
-  };
-
-  const addRecipient = () => {
-    let newRecipients = [...recipients];
-    newRecipients.push(email);
-
-    setRecipients(newRecipients);
-    setEmail(undefined);
-  };
-
-  const showRecipients = () => {
-    if (recipients.length === 0) {
-      return <Text>No recipients added</Text>;
-    }
-
-    return recipients.map((recipient, index) => {
-      return <Text key={index}>{recipient}</Text>;
-    });
-  };
-
-  useEffect(() => {
-    loadAgency();
-  }, [userDetails]);
-
-  const loadAgency = async () => {
-    const supabase = await createClient(
-      "https://lqccaeeetnpeqczjqyqd.supabase.co",
-      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxxY2NhZWVldG5wZXFjempxeXFkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MDQwNDU0MzEsImV4cCI6MjAxOTYyMTQzMX0.PKXx00j5tqis-HRRYJvTBFHLwWsPkYiTqHuIQcYkKCQ"
-    );
-
-    const { data: agency, error } = await supabase
-      .from("agencies")
-      .select("*")
-      .eq("id", id);
-    if (agency) {
-      setAgency(agency[0]);
-    }
-    if (error) {
-      console.error("ID ERROR_ ", error);
-    }
+  const INITIAL_REGION = {
+    latitude,
+    longitude,
+    latitudeDelta: 0.1,
+    longitudeDelta: 0.1,
   };
 
   const shareListing = async () => {
     try {
       await Share.share({
-        title: agency.name,
-        url: agency.listing_url,
+        title: service?.attributes.name,
+        url: "https://thadsandidge.com",
       });
     } catch (error) {
       console.log(error);
@@ -365,6 +137,7 @@ const Page = () => {
       opacity: interpolate(scrollOffset.value, [0, IMG_HEIGHT / 1.5], [0, 1]),
     };
   });
+
   return (
     <View style={styles.container}>
       <Animated.ScrollView
@@ -372,34 +145,39 @@ const Page = () => {
         contentContainerStyle={{ paddingBottom: 100 }}
         scrollEventThrottle={16}
       >
-        <Animated.Image
-          source={{ uri: agency.image_url }}
-          style={[styles.image, imageAnimatedStyle]}
-        ></Animated.Image>
+        <View style={styles.image}>
+          <MapView
+            animationEnabled={false}
+            style={StyleSheet.absoluteFill}
+            showsUserLocation
+            showsMyLocationButton
+            initialRegion={INITIAL_REGION}
+            clusterColor={Colors.grey}
+            clusterFontFamily="mon-sb"
+          >
+            {service && (
+              <Marker
+                key={service.attributes.id}
+                coordinate={{
+                  latitude,
+                  longitude,
+                }}
+              />
+            )}
+          </MapView>
+        </View>
         <View style={styles.infoContainer}>
-          <Text style={styles.name}>{agency.name}</Text>
-          <Text style={styles.location}>in {agency.display_location}</Text>
+          <Text style={styles.name}>{service?.attributes.name}</Text>
+          <Text style={styles.location}>in {service?.attributes.city}</Text>
 
           <View style={{ flexDirection: "row", gap: 4, paddingTop: 8 }}>
-            {agency.website && (
-              <TouchableOpacity onPress={() => Linking.openURL(agency.website)}>
+            {service?.attributes.phoneNumber && (
+              <TouchableOpacity>
                 <View style={{ flexDirection: "row", gap: 4 }}>
                   <Ionicons name="earth" size={18} />
-                  <Text style={styles.ratings}>Website ·</Text>
-                </View>
-              </TouchableOpacity>
-            )}
-            {agency.instagram && (
-              <TouchableOpacity
-                onPress={() => Linking.openURL(agency.instagram)}
-              >
-                <View style={{ flexDirection: "row", gap: 4 }}>
-                  <Ionicons
-                    name="logo-instagram"
-                    size={18}
-                    onPress={() => Linking.openURL(agency.instagram)}
-                  />
-                  <Text style={styles.ratings}>Instagram</Text>
+                  <Text style={styles.ratings}>
+                    {service?.attributes.phoneNumber}
+                  </Text>
                 </View>
               </TouchableOpacity>
             )}
@@ -407,7 +185,7 @@ const Page = () => {
           <View style={styles.divider} />
           <View style={defaultStyles.container}></View>
 
-          <Text style={styles.description}>{agency.about}</Text>
+          <Text style={styles.description}>Get the help you need here.</Text>
         </View>
       </Animated.ScrollView>
       <Animated.View
@@ -422,11 +200,10 @@ const Page = () => {
           }}
         >
           <TouchableOpacity style={styles.footerText}>
-            <Text style={styles.footerPrice}>{agency.applicants}</Text>
+            <Text style={styles.footerPrice}>Test</Text>
             <Text style={{ fontFamily: "mon" }}>applicants</Text>
           </TouchableOpacity>
           <TouchableOpacity
-            onPress={sendMail}
             style={[defaultStyles.btn, { paddingHorizontal: 20 }]}
           >
             <Text style={defaultStyles.btnText}>Apply</Text>
@@ -445,6 +222,14 @@ const styles = StyleSheet.create({
   image: {
     height: IMG_HEIGHT,
     width: width,
+  },
+  marker: {
+    padding: 5,
+    borderRadius: 5,
+  },
+  markerText: {
+    color: "white",
+    fontFamily: "mon-sb",
   },
   infoContainer: {
     padding: 24,
@@ -562,4 +347,5 @@ const styles = StyleSheet.create({
     },
   },
 });
+
 export default Page;
