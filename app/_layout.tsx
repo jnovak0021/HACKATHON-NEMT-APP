@@ -8,6 +8,8 @@ import { ClerkProvider, useAuth } from "@clerk/clerk-expo";
 import { getOnboardingStatus } from "@/utils/supabaseRequests";
 const CLERK_PUBLISHABLE_KEY = process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY;
 
+import { GestureHandlerRootView } from "react-native-gesture-handler";
+
 const tokenCache = {
   async getToken(key: string) {
     try {
@@ -59,12 +61,14 @@ export default function RootLayout() {
     return null;
   }
   return (
-    <ClerkProvider
-      publishableKey={CLERK_PUBLISHABLE_KEY!}
-      tokenCache={tokenCache}
-    >
-      <RootLayoutNav />
-    </ClerkProvider>
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <ClerkProvider
+        publishableKey={CLERK_PUBLISHABLE_KEY!}
+        tokenCache={tokenCache}
+      >
+        <RootLayoutNav />
+      </ClerkProvider>
+    </GestureHandlerRootView>
   );
 }
 

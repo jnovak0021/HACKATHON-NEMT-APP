@@ -5,7 +5,13 @@ FROM node:20.10.0
 WORKDIR /app
 
 # Install Expo CLI globally
-RUN npm install -g expo-cli@0.10.17
+RUN npm install -g expo-cli @expo/ngrok
+
+# Copy package.json and package-lock.json (if available)
+COPY package*.json ./
+
+# Install dependencies
+RUN npm install
 
 # Copy the rest of your application code to the container
 COPY . .
