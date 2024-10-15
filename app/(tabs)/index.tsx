@@ -40,7 +40,7 @@ const Page = () => {
       id: facility.attributes.facilitynumber,
       name: facility.attributes.facilityname,
       type: "Elder Care",
-      address: facility.attributes.address,
+      address: facility.attributes.facilityaddress,
       city: facility.attributes.city,
       state: facility.attributes.state,
       zip: facility.attributes.zip,
@@ -60,7 +60,7 @@ const Page = () => {
       id: hospital.attributes.oshpd_id,
       name: hospital.attributes.facility_name,
       type: "Hospital",
-      address: hospital.attributes.address,
+      address: hospital.attributes.dba_address1,
       city: hospital.attributes.city,
       state: hospital.attributes.state,
       zip: hospital.attributes.zip,
@@ -70,10 +70,18 @@ const Page = () => {
       y: hospital.geometry.y,
     },
   });
+  const shuffleArray = (array: any[]) => {
+    for (let i = array.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [array[i], array[j]] = [array[j], array[i]];
+    }
+    return array;
+  };
   const loadServices = () => {
     const elderCareFacilitiesData =
       elderCareFacilities.layers[0]?.features || [];
     const hospitalsData = healthCareFacilities.layers[0]?.features || [];
+    console.log("ELDER CARE FACILITIES_ ", elderCareFacilitiesData[0]);
 
     const normalizedElderCareFacilities = elderCareFacilitiesData
       .map(normalizeElderCareFacility)
@@ -82,8 +90,14 @@ const Page = () => {
     const normalizedHospitals = hospitalsData
       .map(normalizeHospital)
       .slice(0, 100);
+    // randomize the order of the services
+    console.log("ELDER CARE FACILITIES_ ", normalizedElderCareFacilities[0]);
 
-    return [...normalizedElderCareFacilities, ...normalizedHospitals];
+    const combinedList = [
+      ...normalizedElderCareFacilities,
+      ...normalizedHospitals,
+    ];
+    return shuffleArray(combinedList);
   };
 
   const [services, setServices] = useState<Feature[]>(loadServices());

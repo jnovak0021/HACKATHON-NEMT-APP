@@ -120,11 +120,7 @@ const Page = () => {
           style={styles.btnOutline}
           onPress={() => onSelectAuth(Strategy.Apple)}
         >
-          <Ionicons
-            name="md-logo-apple"
-            size={24}
-            style={defaultStyles.btnIcon}
-          />
+          <Ionicons name="logo-apple" size={24} style={defaultStyles.btnIcon} />
           <Text style={styles.btnOutlineText}>Continue with Apple</Text>
         </TouchableOpacity>
         <TouchableOpacity
@@ -132,7 +128,7 @@ const Page = () => {
           onPress={() => onSelectAuth(Strategy.Google)}
         >
           <Ionicons
-            name="md-logo-google"
+            name="logo-google"
             size={24}
             style={defaultStyles.btnIcon}
           />
@@ -143,7 +139,7 @@ const Page = () => {
           onPress={() => onSelectAuth(Strategy.Facebook)}
         >
           <Ionicons
-            name="md-logo-facebook"
+            name="logo-facebook"
             size={24}
             style={defaultStyles.btnIcon}
           />

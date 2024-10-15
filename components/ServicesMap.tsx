@@ -8,6 +8,7 @@ import MapView from "react-native-map-clustering";
 import Colors from "@/constants/Colors";
 import proj4 from "proj4";
 import { ElderFacilities, Feature } from "@/interfaces/service";
+import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 
 const INITIAL_REGION = {
   latitude: 32.78825,
@@ -19,8 +20,20 @@ const INITIAL_REGION = {
 // Define the projection for the input coordinates (e.g., UTM Zone 33N)
 const inputProjection =
   "+proj=lcc +lat_1=33.88333333333333 +lat_2=32.78333333333333 +lat_0=32.16666666666666 +lon_0=-116.25 +x_0=2000000.0001016 +y_0=500000.0001016001 +datum=NAD83 +units=us-ft +no_defs";
-// Define the projection for the output coordinates (WGS84)
 const outputProjection = "EPSG:4326";
+type ServiceType = "Hospital" | "Elder Care"; // Add more types as needed
+
+const markerColors: Record<ServiceType, string> = {
+  Hospital: Colors.hospitalColor,
+  "Elder Care": Colors.elderCareColor,
+  // Add more types and their corresponding colors here
+};
+
+const markerIcons: Record<ServiceType, JSX.Element> = {
+  Hospital: <MaterialIcons name="local-hospital" size={20} color="white" />,
+  "Elder Care": <MaterialIcons name="elderly" size={20} color="white" />,
+  // Add more types and their corresponding icons here
+};
 
 const ServicesMap = ({ services }: ElderFacilities) => {
   const router = useRouter();
@@ -29,32 +42,16 @@ const ServicesMap = ({ services }: ElderFacilities) => {
     router.push(`/service/${service.attributes.id}`);
   };
 
-  const renderCluster = (cluster: any) => {
-    const { id, geometry, onPress, properties } = cluster;
-    const points = properties.point_count;
-
-    console.log("Cluster Rendered: ", cluster);
-
-    return (
-      <Marker
-        key={`cluster-${id}`}
-        onPress={onPress}
-        coordinate={{
-          longitude: geometry.x,
-          latitude: geometry.y,
-        }}
-      >
-        <View style={styles.clusterMarker}>
-          <Text style={styles.clusterText}>{points}</Text>
-        </View>
-      </Marker>
-    );
+  const getMarkerColor = (service: Feature) => {
+    return markerColors[service.attributes.type as ServiceType] || Colors.grey; // Fallback to a default color if type is not found
   };
 
-  const getMarkerColor = (service: Feature) => {
-    return service.attributes.type === "Hospital"
-      ? Colors.hospitalColor
-      : Colors.elderCareColor;
+  const getMarkerIcon = (service: Feature) => {
+    return (
+      markerIcons[service.attributes.type as ServiceType] || (
+        <MaterialIcons name="help-outline" size={24} color="white" />
+      )
+    ); // Fallback to a default icon if type is not found
   };
 
   return (
@@ -65,7 +62,7 @@ const ServicesMap = ({ services }: ElderFacilities) => {
         showsUserLocation
         showsMyLocationButton
         initialRegion={INITIAL_REGION}
-        clusterColor={Colors.primary}
+        clusterColor={Colors.grey}
         clusterFontFamily="mon-sb"
       >
         {services.map((service: Feature, index: number) => {
@@ -75,16 +72,6 @@ const ServicesMap = ({ services }: ElderFacilities) => {
             outputProjection,
             [service.geometry.x, service.geometry.y]
           );
-
-          // Log coordinates to check if they are valid
-          console.log(
-            `Service #${index} (${service.attributes.name}) coordinates:`,
-            {
-              latitude,
-              longitude,
-            }
-          );
-
           return (
             <Marker
               key={service.attributes.id}
@@ -101,7 +88,7 @@ const ServicesMap = ({ services }: ElderFacilities) => {
                   { backgroundColor: getMarkerColor(service) },
                 ]}
               >
-                <Text style={styles.markerText}>{service.attributes.name}</Text>
+                <Text style={styles.markerText}>{getMarkerIcon(service)}</Text>
               </View>
             </Marker>
           );

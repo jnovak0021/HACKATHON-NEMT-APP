@@ -1,25 +1,18 @@
+import { defaultStyles } from "@/constants/Styles";
 import {
   View,
   Text,
   StyleSheet,
   TouchableOpacity,
-  Image,
   ListRenderItem,
-  NativeSyntheticEvent,
-  NativeScrollEvent,
 } from "react-native";
-import React, { useEffect, useRef } from "react";
-import { FlashList } from "@shopify/flash-list";
-import { defaultStyles } from "@/constants/Styles";
-import { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Link } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import Animated, { FadeOutLeft, FadeInRight } from "react-native-reanimated";
-import { useAuth } from "@clerk/clerk-react";
-import { createClient } from "@supabase/supabase-js";
 import Colors from "@/constants/Colors";
-import { ElderFacilities, Feature } from "@/interfaces/service";
-
+import { Feature } from "@/interfaces/service";
+import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import {
   BottomSheetFlatList,
   BottomSheetFlatListMethods,
@@ -30,11 +23,35 @@ interface Props {
   category: string | null;
   refresh: number;
 }
+const outputProjection = "EPSG:4326";
+type ServiceType = "Hospital" | "Elder Care"; // Add more types as needed
+
+const markerColors: Record<ServiceType, string> = {
+  Hospital: Colors.hospitalColor,
+  "Elder Care": Colors.elderCareColor,
+  // Add more types and their corresponding colors here
+};
+
+const markerIcons: Record<ServiceType, JSX.Element> = {
+  Hospital: <MaterialIcons name="local-hospital" size={40} color="white" />,
+  "Elder Care": <MaterialIcons name="elderly" size={40} color="white" />,
+  // Add more types and their corresponding icons here
+};
+const getMarkerColor = (service: Feature) => {
+  return markerColors[service.attributes.type as ServiceType] || Colors.grey; // Fallback to a default color if type is not found
+};
+
+const getMarkerIcon = (service: Feature) => {
+  return (
+    markerIcons[service.attributes.type as ServiceType] || (
+      <MaterialIcons name="help-outline" size={24} color="white" />
+    )
+  ); // Fallback to a default icon if type is not found
+};
+
 const Services = ({ services = [], category, refresh }: Props) => {
   const [loading, setLoading] = useState(false);
-  const [images, setImages] = useState<Record<string, string>>({});
   const listRef = useRef<BottomSheetFlatListMethods>(null);
-  // Inside your component
 
   useEffect(() => {
     if (refresh) {
@@ -53,36 +70,31 @@ const Services = ({ services = [], category, refresh }: Props) => {
 
   const renderRow: ListRenderItem<Feature> = ({ item }) => {
     return (
-      <Link href={`/service/${item.attributes.objectid}`} asChild>
+      <Link href={`/service/${item.attributes.id}`} asChild>
         <TouchableOpacity>
           <Animated.View
             style={styles.listing}
             entering={FadeInRight}
             exiting={FadeOutLeft}
           >
-            {/* <Image source={{ uri: item.attributes.complaintinfo }} style={styles.image} /> */}
+            <View style={styles.iconContainer}>
+              <View
+                style={[
+                  styles.iconBackground,
+                  { backgroundColor: getMarkerColor(item) },
+                ]}
+              >
+                {getMarkerIcon(item)}
+              </View>
+              <View style={styles.textContainer}>
+                <Text style={styles.name}>{item.attributes.name}</Text>
+                <Text style={styles.type}>{item.attributes.type}</Text>
 
-            <TouchableOpacity
-              style={{ position: "absolute", top: 30, right: 30 }}
-            >
-              <Ionicons
-                name="heart-outline"
-                size={24}
-                color={"#000"}
-              ></Ionicons>
-            </TouchableOpacity>
-            <View
-              style={{ flexDirection: "row", justifyContent: "space-between" }}
-            >
-              <Text style={{ fontSize: 16, fontFamily: "mon-sb" }}>
-                {item.attributes.facilityname}
-              </Text>
-            </View>
-            <View style={{ flexDirection: "row", gap: 4 }}>
-              <Ionicons name="location" size={16}></Ionicons>
-              <Text style={{ fontFamily: "mon" }}>
-                {item.attributes.facilityaddress}
-              </Text>
+                <View style={styles.locationContainer}>
+                  <Ionicons name="location" size={16} style={styles.icon} />
+                  <Text style={styles.address}>{item.attributes.address}</Text>
+                </View>
+              </View>
             </View>
           </Animated.View>
         </TouchableOpacity>
@@ -109,11 +121,49 @@ const styles = StyleSheet.create({
     padding: 16,
     gap: 10,
     marginVertical: 16,
-  },
-  image: {
-    width: "100%",
-    height: 300,
+    backgroundColor: "rgba(128, 128, 128, 0.1)", // Semi-transparent background color
     borderRadius: 10,
+    marginHorizontal: 8,
+  },
+  iconContainer: {
+    flexDirection: "row",
+    gap: 10,
+    alignItems: "center",
+  },
+  iconBackground: {
+    width: 60,
+    height: 60,
+    backgroundColor: Colors.primary,
+    borderRadius: 8,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  textContainer: {
+    flex: 1,
+    // more spacing between top and bottom of items
+    rowGap: 4,
+  },
+  locationContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 4,
+  },
+  name: {
+    fontSize: 16,
+    fontFamily: "mon-sb",
+    color: "black", // Ensure the text color is fully opaque
+  },
+  type: {
+    fontSize: 16,
+    fontFamily: "mon",
+    color: "black", // Ensure the text color is fully opaque
+  },
+  address: {
+    fontFamily: "mon",
+    color: "black", // Ensure the text color is fully opaque
+  },
+  icon: {
+    color: "black", // Ensure the icon color is fully opaque
   },
   info: {
     textAlign: "center",
@@ -130,4 +180,5 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
 });
+
 export default Services;
