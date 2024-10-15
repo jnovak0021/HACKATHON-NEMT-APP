@@ -10,13 +10,21 @@ import {
 import { Stack, useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import Colors from "@/constants/Colors";
+import MomImage from "@/assets/images/mom-image.png";
+import { Linking } from "react-native";
 
 const Page = () => {
   const router = useRouter();
 
   const handleSendText = () => {
-    // Implement the logic to send a text reminder or schedule a ride
-    console.log("Send text reminder or schedule a ride");
+    const phoneNumber = "9078309507"; // Replace with the actual phone number
+    const message =
+      "Hey Mom, don't forget you have a checkup coming up the 9th of December. Do you need me to book you a ride?"; // Replace with your message
+    const url = `sms:${phoneNumber}?body=${encodeURIComponent(message)}`;
+
+    Linking.openURL(url).catch((err) =>
+      console.error("Error opening SMS app", err)
+    );
   };
 
   return (
@@ -33,11 +41,11 @@ const Page = () => {
         <View style={styles.appointmentContainer}>
           <View style={styles.appointmentHeader}>
             <Image
-              source={{ uri: "https://via.placeholder.com/50" }} // Replace with actual image URL
+              source={require("@/assets/images/mom-image.png")}
               style={styles.profileImage}
             />
             <View>
-              <Text style={styles.profileName}>Jane Doe</Text>
+              <Text style={styles.profileName}>Christa Sandidge</Text>
               <Text style={styles.profileRelation}>Mother</Text>
             </View>
           </View>
@@ -47,17 +55,26 @@ const Page = () => {
 
           <View style={styles.appointmentSection}>
             <Text style={styles.appointmentDetails}>
-              Doctor's appointment on 12th Dec at 10:00 AM
+              Checkup on 12th Dec at 10:00 AM
             </Text>
             <Text style={styles.appointmentLocation}>
               <Ionicons name="location" size={16} style={styles.icon} /> 123
               Health St, Wellness City
+            </Text>
+            <Text style={[styles.appointmentLocation, { color: "red" }]}>
+              No Ride Scheduled{" "}
+              <Ionicons
+                name="warning-outline"
+                size={16}
+                color={"red"}
+              ></Ionicons>
             </Text>
             <TouchableOpacity
               style={styles.scheduleRideButton}
               onPress={handleSendText}
             >
               <Text style={styles.scheduleRideButtonText}>Schedule Ride</Text>
+              <Ionicons name="car" size={20} color={"#fff"}></Ionicons>
             </TouchableOpacity>
           </View>
 
@@ -77,6 +94,7 @@ const Page = () => {
                 color={"green"}
               ></Ionicons>
             </Text>
+
             <TouchableOpacity
               style={styles.rideScheduledButton}
               onPress={handleSendText}
@@ -84,6 +102,7 @@ const Page = () => {
               <Text style={styles.rideScheduledButtonText}>
                 Send Reminder Text
               </Text>
+              <Ionicons name="chatbox" size={20} color={"#fff"}></Ionicons>
             </TouchableOpacity>
           </View>
         </View>
@@ -121,7 +140,6 @@ const styles = StyleSheet.create({
     color: Colors.grey, // Ensure the icon color is fully opaque
   },
   infoContainer: {
-    marginTop: 25,
     padding: 24,
     backgroundColor: "#fff",
   },
@@ -132,7 +150,7 @@ const styles = StyleSheet.create({
   },
   absoluteView: {
     position: "absolute",
-    bottom: 20,
+    bottom: 10,
     width: "100%",
     alignItems: "center",
   },
@@ -161,7 +179,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#f0f0f0",
     borderRadius: 12,
     padding: 16,
-    marginTop: 16,
+    marginTop: 2,
   },
   appointmentHeader: {
     flexDirection: "row",
@@ -215,7 +233,11 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.primary,
     padding: 12,
     borderRadius: 8,
+    flexDirection: "row",
+    paddingHorizontal: "auto",
     alignItems: "center",
+    justifyContent: "center",
+    gap: 8,
   },
   scheduleRideButtonText: {
     color: "#fff",
@@ -223,10 +245,14 @@ const styles = StyleSheet.create({
     fontFamily: "mon-sb",
   },
   rideScheduledButton: {
-    backgroundColor: "green",
+    backgroundColor: Colors.hospitalColor,
     padding: 12,
     borderRadius: 8,
+    flexDirection: "row",
+    paddingHorizontal: "auto",
     alignItems: "center",
+    justifyContent: "center",
+    gap: 8,
   },
   rideScheduledButtonText: {
     color: "#fff",
