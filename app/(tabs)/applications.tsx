@@ -30,6 +30,7 @@ const Page = () => {
         <Text>Continue with Apple</Text>
       </TouchableOpacity>
     </View>
+    
   );
 };
 
