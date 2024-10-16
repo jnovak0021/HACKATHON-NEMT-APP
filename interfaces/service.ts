@@ -15,6 +15,7 @@ export interface Attributes {
   capacity?: number; // Optional, since hospitals and elder care may have different capacity definitions
   x: number; // Longitude
   y: number; // Latitude
+  description: string; // Description of the facility
 }
 
 export interface Feature {

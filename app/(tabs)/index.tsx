@@ -2,21 +2,27 @@ import React, { useMemo } from "react";
 import { Text, View } from "react-native";
 import { Link, Stack, useLocalSearchParams, useRouter } from "expo-router";
 import ExploreHeader from "@/components/ExploreHeader";
-import Agencies from "@/components/Services";
 import { useEffect, useState } from "react";
-import listingsData from "@/assets/data/airbnb-listings.json";
 import elderCareFacilities from "@/assets/data/elder-care-facilities.json";
 import healthCareFacilities from "@/assets/data/health-care-facilities.json";
+import childCareFacilities from "@/assets/data/child-care-facilities.json";
+import coolZones from "@/assets/data/cool-zones.json";
+import residentialFacilities from "@/assets/data/residential-facilities.json";
+import treatmentCenters from "@/assets/data/treatment-centers.json";
 
 import ServicesMap from "@/components/ServicesMap";
-import { createClient } from "@supabase/supabase-js";
 import AgenciesBottomSheet from "@/components/ServicesBottomSheet";
 import { getUser } from "@/utils/supabaseRequests";
-import axios from "axios";
-import base64 from "react-native-base64";
-import { decode } from "base64-arraybuffer";
 import { useAuth } from "@clerk/clerk-react";
-import { ElderFacilities, Feature } from "@/interfaces/service";
+import { Feature } from "@/interfaces/service";
+import {
+  normalizeChildCareFacility,
+  normalizeCoolZone,
+  normalizeElderCareFacility,
+  normalizeHospital,
+  normalizeResidentialFacility,
+  normalizeTreatmentCenter,
+} from "@/utils/normalizeData";
 
 // Example usage in your Page component
 const Page = () => {
@@ -26,50 +32,45 @@ const Page = () => {
 
   const refresh = params?.refresh;
   const [category, setCategory] = useState<string | null>(null);
+  // const normalizeElderCareFacility = (facility: any): Feature => ({
+  //   geometry: {
+  //     x: facility.geometry.x,
+  //     y: facility.geometry.y,
+  //   },
+  //   attributes: {
+  //     id: facility.attributes.facilitynumber,
+  //     name: facility.attributes.facilityname,
+  //     type: "Elder Care",
+  //     address: facility.attributes.facilityaddress,
+  //     city: facility.attributes.facilitycity,
+  //     state: facility.attributes.facilitystate,
+  //     zip: facility.attributes.facilityzip,
+  //     phoneNumber: facility.attributes.facilityemail ?? undefined,
+  //     capacity: facility.attributes.capacity ?? undefined,
+  //     x: facility.geometry.x,
+  //     y: facility.geometry.y,
+  //   },
+  // });
 
-  const inputProjection =
-    "+proj=lcc +lat_1=33.88333333333333 +lat_2=32.78333333333333 +lat_0=32.16666666666666 +lon_0=-116.25 +x_0=2000000.0001016 +y_0=500000.0001016001 +datum=NAD83 +units=us-ft +no_defs";
-  // Define the projection for the output coordinates (WGS84)
-  const outputProjection = "EPSG:4326";
-  const normalizeElderCareFacility = (facility: any): Feature => ({
-    geometry: {
-      x: facility.geometry.x,
-      y: facility.geometry.y,
-    },
-    attributes: {
-      id: facility.attributes.facilitynumber,
-      name: facility.attributes.facilityname,
-      type: "Elder Care",
-      address: facility.attributes.facilityaddress,
-      city: facility.attributes.facilitycity,
-      state: facility.attributes.facilitystate,
-      zip: facility.attributes.facilityzip,
-      phoneNumber: facility.attributes.facilityemail ?? undefined,
-      capacity: facility.attributes.capacity ?? undefined,
-      x: facility.geometry.x,
-      y: facility.geometry.y,
-    },
-  });
-
-  const normalizeHospital = (hospital: any): Feature => ({
-    geometry: {
-      x: hospital.geometry.x,
-      y: hospital.geometry.y,
-    },
-    attributes: {
-      id: hospital.attributes.oshpd_id,
-      name: hospital.attributes.facility_name,
-      type: "Health Care",
-      address: hospital.attributes.dba_address1,
-      city: hospital.attributes.dba_city,
-      state: hospital.attributes.state,
-      zip: hospital.attributes.zip,
-      phoneNumber: hospital.attributes.facility_email ?? undefined,
-      capacity: hospital.attributes.capacity ?? undefined,
-      x: hospital.geometry.x,
-      y: hospital.geometry.y,
-    },
-  });
+  // const normalizeHospital = (hospital: any): Feature => ({
+  //   geometry: {
+  //     x: hospital.geometry.x,
+  //     y: hospital.geometry.y,
+  //   },
+  //   attributes: {
+  //     id: hospital.attributes.oshpd_id,
+  //     name: hospital.attributes.facility_name,
+  //     type: "Health Care",
+  //     address: hospital.attributes.dba_address1,
+  //     city: hospital.attributes.dba_city,
+  //     state: hospital.attributes.state,
+  //     zip: hospital.attributes.zip,
+  //     phoneNumber: hospital.attributes.facility_email ?? undefined,
+  //     capacity: hospital.attributes.capacity ?? undefined,
+  //     x: hospital.geometry.x,
+  //     y: hospital.geometry.y,
+  //   },
+  // });
   const shuffleArray = (array: any[]) => {
     for (let i = array.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1));
@@ -81,42 +82,45 @@ const Page = () => {
     const elderCareFacilitiesData =
       elderCareFacilities.layers[0]?.features || [];
     const hospitalsData = healthCareFacilities.layers[0]?.features || [];
+    const childCareFacilitiesData =
+      childCareFacilities.layers[0]?.features || [];
+    const coolZonesData = coolZones.layers[0]?.features || [];
+    const residentialFacilitiesData =
+      residentialFacilities.layers[0]?.features || [];
+    const treatmentCentersData = treatmentCenters.layers[0]?.features || [];
+
     const normalizedElderCareFacilities = elderCareFacilitiesData
       .map(normalizeElderCareFacility)
-      .slice(0, 100); // limit to 100
-    // limit to 100
+      .slice(0, 100);
     const normalizedHospitals = hospitalsData
       .map(normalizeHospital)
       .slice(0, 100);
-    // randomize the order of the services
+    const normalizedChildCareFacilities = childCareFacilitiesData
+      .map(normalizeChildCareFacility)
+      .slice(0, 100);
+    const normalizedCoolZones = coolZonesData
+      .map(normalizeCoolZone)
+      .slice(0, 100);
+    const normalizedResidentialFacilities = residentialFacilitiesData
+      .map(normalizeResidentialFacility)
+      .slice(0, 100);
+    const normalizedTreatmentCenters = treatmentCentersData
+      .map(normalizeTreatmentCenter)
+      .slice(0, 100);
+
     const combinedList = [
       ...normalizedElderCareFacilities,
       ...normalizedHospitals,
+      ...normalizedChildCareFacilities,
+      ...normalizedCoolZones,
+      ...normalizedResidentialFacilities,
+      ...normalizedTreatmentCenters,
     ];
     return shuffleArray(combinedList);
   };
 
   const [services, setServices] = useState<Feature[]>(loadServices());
   const [filteredServices, setFilteredServices] = useState<Feature[]>(services);
-
-  const [userDetails, setUserDetails] = useState<any>([]);
-  const [loadingUser, setLoadingUser] = useState(true);
-
-  const loadUser = async () => {
-    try {
-      const token = await getToken({ template: "supabase" });
-      const user = await getUser({
-        userId: userId ?? "",
-        token: token ?? "",
-      });
-      setUserDetails(user);
-      console.log("USER DETAILS_ ", user);
-    } catch (error) {
-      console.error("Error loading user details:", error);
-    } finally {
-      setLoadingUser(false);
-    }
-  };
 
   const onDataChanged = (category: string) => {
     console.log("CHANGED_ ", category);

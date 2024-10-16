@@ -168,24 +168,37 @@ const Page = () => {
         </View>
         <View style={styles.infoContainer}>
           <Text style={styles.name}>{service?.attributes.name}</Text>
-          <Text style={styles.location}>in {service?.attributes.city}</Text>
+          <Text style={styles.location}>
+            in {service?.attributes.city}, {service?.attributes.state}
+          </Text>
 
+          <View style={styles.divider} />
+          <View style={defaultStyles.container}></View>
           <View style={{ flexDirection: "row", gap: 4, paddingTop: 8 }}>
             {service?.attributes.phoneNumber && (
               <TouchableOpacity>
                 <View style={{ flexDirection: "row", gap: 4 }}>
-                  <Ionicons name="earth" size={18} />
-                  <Text style={styles.ratings}>
+                  <Ionicons name="call" size={18} />
+                  <Text style={styles.contactText}>
                     {service?.attributes.phoneNumber}
                   </Text>
                 </View>
               </TouchableOpacity>
             )}
+            {service?.attributes.address && (
+              <TouchableOpacity>
+                <View style={{ flexDirection: "row", gap: 4 }}>
+                  <Ionicons name="location" size={18} />
+                  <Text style={styles.contactText}>
+                    {service?.attributes.address}
+                  </Text>
+                </View>
+              </TouchableOpacity>
+            )}
           </View>
-          <View style={styles.divider} />
-          <View style={defaultStyles.container}></View>
-
-          <Text style={styles.description}>Get the help you need here.</Text>
+          <Text style={styles.description}>
+            {service?.attributes.description} Get the help you need here.
+          </Text>
         </View>
       </Animated.ScrollView>
       <Animated.View
@@ -200,13 +213,13 @@ const Page = () => {
           }}
         >
           <TouchableOpacity style={styles.footerText}>
-            <Text style={styles.footerPrice}>Test</Text>
-            <Text style={{ fontFamily: "mon" }}>applicants</Text>
+            <Text style={styles.footerPrice}>100+</Text>
+            <Text style={{ fontFamily: "mon" }}>patients received</Text>
           </TouchableOpacity>
           <TouchableOpacity
             style={[defaultStyles.btn, { paddingHorizontal: 20 }]}
           >
-            <Text style={defaultStyles.btnText}>Apply</Text>
+            <Text style={defaultStyles.btnText}>Get Care</Text>
           </TouchableOpacity>
         </View>
       </Animated.View>
@@ -254,6 +267,10 @@ const styles = StyleSheet.create({
   ratings: {
     fontSize: 16,
     fontFamily: "mon-sb",
+  },
+  contactText: {
+    fontSize: 16,
+    fontFamily: "mon",
   },
   divider: {
     height: StyleSheet.hairlineWidth,
@@ -305,30 +322,10 @@ const styles = StyleSheet.create({
     borderBottomWidth: StyleSheet.hairlineWidth,
     borderColor: Colors.grey,
   },
-
   description: {
     fontSize: 16,
     marginTop: 10,
     fontFamily: "mon",
-  },
-  marker: {
-    padding: 8,
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: "#fff",
-    elevation: 5,
-    borderRadius: 12,
-    shadowColor: "#000",
-    shadowOpacity: 0.1,
-    shadowRadius: 6,
-    shadowOffset: {
-      width: 1,
-      height: 10,
-    },
-  },
-  markerText: {
-    fontSize: 14,
-    fontFamily: "mon-sb",
   },
   locateBtn: {
     position: "absolute",
