@@ -9,49 +9,35 @@ import Colors from "@/constants/Colors";
 import proj4 from "proj4";
 import { ElderFacilities, Feature } from "@/interfaces/service";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
+import {
+  getMarkerColor,
+  getMarkerIcon,
+  ServiceType,
+} from "@/utils/serviceGraphics";
 
 const INITIAL_REGION = {
   latitude: 32.78825,
   longitude: -117.4324,
-  latitudeDelta: 40,
-  longitudeDelta: 40,
+  latitudeDelta: 10,
+  longitudeDelta: 10,
 };
 
 // Define the projection for the input coordinates (e.g., UTM Zone 33N)
 const inputProjection =
   "+proj=lcc +lat_1=33.88333333333333 +lat_2=32.78333333333333 +lat_0=32.16666666666666 +lon_0=-116.25 +x_0=2000000.0001016 +y_0=500000.0001016001 +datum=NAD83 +units=us-ft +no_defs";
 const outputProjection = "EPSG:4326";
-type ServiceType = "Hospital" | "Elder Care"; // Add more types as needed
-
-const markerColors: Record<ServiceType, string> = {
-  Hospital: Colors.hospitalColor,
-  "Elder Care": Colors.elderCareColor,
-  // Add more types and their corresponding colors here
-};
-
-const markerIcons: Record<ServiceType, JSX.Element> = {
-  Hospital: <MaterialIcons name="local-hospital" size={20} color="white" />,
-  "Elder Care": <MaterialIcons name="elderly" size={20} color="white" />,
-  // Add more types and their corresponding icons here
-};
 
 const ServicesMap = ({ services }: ElderFacilities) => {
   const router = useRouter();
 
   const onMarkerSelected = (service: Feature) => {
-    router.push(`/service/${service.attributes.id}`);
-  };
-
-  const getMarkerColor = (service: Feature) => {
-    return markerColors[service.attributes.type as ServiceType] || Colors.grey; // Fallback to a default color if type is not found
-  };
-
-  const getMarkerIcon = (service: Feature) => {
-    return (
-      markerIcons[service.attributes.type as ServiceType] || (
-        <MaterialIcons name="help-outline" size={24} color="white" />
-      )
-    ); // Fallback to a default icon if type is not found
+    // parse feature to json
+    const serviceString = JSON.stringify(service);
+    console.log(service);
+    router.push({
+      pathname: `/service/[id]`,
+      params: { id: service.attributes.id, service: serviceString },
+    });
   };
 
   return (
@@ -67,6 +53,7 @@ const ServicesMap = ({ services }: ElderFacilities) => {
       >
         {services.map((service: Feature, index: number) => {
           // Convert the coordinates and log the output
+          const serviceType = service.attributes.type as ServiceType;
           const [longitude, latitude] = proj4(
             inputProjection,
             outputProjection,
@@ -80,15 +67,17 @@ const ServicesMap = ({ services }: ElderFacilities) => {
                 latitude,
                 longitude,
               }}
-              pinColor={getMarkerColor(service)}
+              pinColor={getMarkerColor(serviceType)}
             >
               <View
                 style={[
                   styles.marker,
-                  { backgroundColor: getMarkerColor(service) },
+                  { backgroundColor: getMarkerColor(serviceType) },
                 ]}
               >
-                <Text style={styles.markerText}>{getMarkerIcon(service)}</Text>
+                <Text style={styles.markerText}>
+                  {getMarkerIcon(serviceType, 16)}
+                </Text>
               </View>
             </Marker>
           );

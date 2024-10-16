@@ -11,16 +11,16 @@ import { findNodeHandle } from "react-native";
 
 const categories = [
   {
-    category: "Fashion",
+    category: "All",
     icon: "style",
   },
   {
-    category: "Boutique",
-    icon: "store",
+    category: "Health Care",
+    icon: "local-hospital",
   },
   {
-    category: "Mother",
-    icon: "people",
+    category: "Elder Care",
+    icon: "elderly",
   },
   {
     category: "Designer",
@@ -91,9 +91,11 @@ const ExploreHeader = ({ onCategoryChanged }: Props) => {
             <TouchableOpacity style={styles.searchBtn}>
               <Ionicons name="search" size={24}></Ionicons>
               <View>
-                <Text style={{ fontFamily: "mon-sb" }}>Search Agencies?</Text>
+                <Text style={{ fontFamily: "mon-sb" }}>
+                  Search Health Services?
+                </Text>
                 <Text style={{ fontFamily: "mon", color: Colors.grey }}>
-                  Get Discovered • Today
+                  Get Care • Today
                 </Text>
               </View>
             </TouchableOpacity>

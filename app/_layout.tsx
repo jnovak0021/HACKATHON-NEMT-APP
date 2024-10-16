@@ -61,14 +61,14 @@ export default function RootLayout() {
     return null;
   }
   return (
-    <GestureHandlerRootView style={{ flex: 1 }}>
-      <ClerkProvider
-        publishableKey={CLERK_PUBLISHABLE_KEY!}
-        tokenCache={tokenCache}
-      >
+    <ClerkProvider
+      publishableKey={CLERK_PUBLISHABLE_KEY!}
+      tokenCache={tokenCache}
+    >
+      <GestureHandlerRootView style={{ flex: 1 }}>
         <RootLayoutNav />
-      </ClerkProvider>
-    </GestureHandlerRootView>
+      </GestureHandlerRootView>
+    </ClerkProvider>
   );
 }
 
@@ -112,7 +112,7 @@ function RootLayoutNav() {
   return (
     <Stack>
       <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-      {/* <Stack.Screen
+      <Stack.Screen
         name="(modals)/login"
         options={{
           title: "Login or sign up",
@@ -125,16 +125,8 @@ function RootLayoutNav() {
           ),
         }}
       />
-      <Stack.Screen
-        name="(modals)/onboarding"
-        options={{
-          title: "Let's get started",
-          headerShown: false, // Add this
-          headerTitleStyle: { fontFamily: "mon-b" },
-          presentation: "card", // Change this
-          gestureEnabled: false, // Add this
-        }}
-      />
+      {/*
+
       <Stack.Screen
         name="(modals)/general"
         options={{
