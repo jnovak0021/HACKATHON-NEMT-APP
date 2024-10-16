@@ -1,159 +1,78 @@
-import { Button, Text, View, StyleSheet, ScrollView } from "react-native";
 import React from "react";
-import { Link, Tabs } from "expo-router";
-import { useAuth, useUser } from "@clerk/clerk-expo";
-import { useEffect, useState } from "react";
 import {
-  updateUser,
-  getUser,
-  uploadPicture,
-  loadPicture,
-} from "@/utils/supabaseRequests";
-import { FileObject } from "@supabase/storage-js";
-import Colors from "@/constants/Colors";
+  SafeAreaView,
+  View,
+  Text,
+  Image,
+  TouchableOpacity,
+  StyleSheet,
+} from "react-native";
+import { Stack, useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
-import { TouchableOpacity } from "react-native-gesture-handler";
-import * as ImagePicker from "expo-image-picker";
-import * as FileSystem from "expo-file-system";
-import ImageItem from "@/components/ImageItem";
-import { supabaseClient } from "@/utils/supabase";
+import Colors from "@/constants/Colors";
+import { useAuth, useUser } from "@clerk/clerk-expo";
 
 const Page = () => {
-  const { signOut, isSignedIn, userId, getToken } = useAuth();
+  const router = useRouter();
+  const { signOut, isSignedIn } = useAuth();
   const { user } = useUser();
 
-  const [loadingUser, setLoadingUser] = useState<any>(false);
-  const [userDetails, setUserDetails] = useState<any>([]);
-
-  const [files, setFiles] = useState<FileObject[]>([]);
-
-  useEffect(() => {
-    if (!isSignedIn) return;
-
-    loadImages();
-  }, [isSignedIn]);
-
-  const loadImages = async () => {
-    const token = await getToken({ template: "supabase" });
-    const data = await loadPicture({
-      token: token ?? "",
-      userId: userId ?? "",
-    });
-    if (data) {
-      setFiles(data);
-    }
-  };
-
-  const onSelectImage = async () => {
-    const options: ImagePicker.ImagePickerOptions = {
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      allowsEditing: true,
-    };
-    const result = await ImagePicker.launchImageLibraryAsync(options);
-    if (!result.canceled) {
-      console.log("Result", result.assets[0].uri);
-      const img = result.assets[0];
-      const base64 = await FileSystem.readAsStringAsync(img.uri, {
-        encoding: "base64",
-      });
-      const filePath = `${userId}/${new Date().getTime()}.${
-        img.type === "image" ? "png" : "mp4"
-      }`;
-      const contentType = img.type === "image" ? "image/png" : "video/mp4";
-      const token = await getToken({ template: "supabase" });
-      const update = await uploadPicture({
-        token: token ?? "",
-        filePath: filePath,
-        base64: base64,
-        contentType: contentType,
-      });
-      console.log(update);
-      await loadImages();
-    }
-  };
-
-  // Load user details from Supabase
-  useEffect(() => {
-    if (!isSignedIn) return;
-    loadUser();
-  }, [isSignedIn]);
-
-  const loadUser = async () => {
-    try {
-      const token = await getToken({ template: "supabase" });
-      const user = await getUser({
-        userId: userId ?? "",
-        token: token ?? "",
-      });
-      setUserDetails(user);
-    } catch (error) {
-      console.error("Error loading user details:", error);
-    } finally {
-      setLoadingUser(false);
-    }
-  };
-
-  // Update user details in Supabase
-  const updateUserDetails = async (event: any) => {
-    console.log("updateUserDetails");
-    const token = await getToken({ template: "supabase" });
-    const update = await updateUser({
-      userId: userId ?? "",
-      token: token ?? "",
-      event: event,
-    });
-    console.log(update);
-    await loadUser();
-  };
-  const onRemoveImage = async (item: FileObject, listIndex: number) => {
-    const token = await getToken({ template: "supabase" });
-
-    if (token) {
-      const supabase = await supabaseClient(token);
-      supabase.storage.from("models").remove([`${userId}/${item.name}`]);
-      const newFiles = [...files];
-      newFiles.splice(listIndex, 1);
-      setFiles(newFiles);
-    } else {
-      console.error("Error obtaining Clerk Token");
-    }
-  };
   return (
-    <View style={styles.container}>
-      <Button title="Upload" onPress={onSelectImage} />
-      <Button title="Log out" onPress={() => signOut()} />
-      <ScrollView>
-        {files.map((item, index) => (
-          <ImageItem
-            key={item.id}
-            item={item}
-            userId={user!.id}
-            onRemoveImage={() => onRemoveImage(item, index)}
-          />
-        ))}
-      </ScrollView>
-      {!isSignedIn && (
-        <View>
-          <Link href={"/(modals)/login"}>
-            <Text>Login</Text>
-          </Link>
-        </View>
-      )}
-      {user && (
-        <View>
-          <Text>Hello, {userId} welcome test to Clerk</Text>
-          <Button title="Update" onPress={updateUserDetails} />
-        </View>
-
-        // Load user details from Supabase
-      )}
-      {userDetails && (
-        <View>
-          <Text>User Details: {JSON.stringify(userDetails)}</Text>
-          {/* You can customize the display of userDetails based on your data structure */}
-        </View>
-      )}
-    </View>
+    <SafeAreaView style={{ flex: 1, backgroundColor: "#fff" }}>
+      <Stack.Screen options={{ headerShown: false }} />
+      <View style={styles.container}>
+        {!isSignedIn ? (
+          <View style={styles.loggedOutContainer}>
+            <Text style={styles.loggedOutText}>You are logged out</Text>
+            <TouchableOpacity
+              style={styles.loginButton}
+              onPress={() => router.push("/(modals)/login")}
+            >
+              <Ionicons name="log-in" size={20} color={"#fff"} />
+              <Text style={styles.loginButtonText}>Login</Text>
+            </TouchableOpacity>
+          </View>
+        ) : (
+          <View style={styles.profileContainer}>
+            <View style={styles.profileImageContainer}>
+              <Image
+                source={{ uri: user?.imageUrl }}
+                style={styles.profileImage}
+              />
+            </View>
+            <View style={styles.profileDetailsContainer}>
+              <Text style={styles.welcomeText}>
+                Welcome back, {user?.firstName}!
+              </Text>
+              <Text style={styles.descriptionText}>
+                Manage your account settings, add family members, and more.
+              </Text>
+              <TouchableOpacity
+                style={styles.profileButton}
+                onPress={() => router.push("/settings")}
+              >
+                <Ionicons name="settings" size={20} color={Colors.primary} />
+                <Text style={styles.profileButtonText}>Settings</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.profileButton}
+                onPress={() => signOut()}
+              >
+                <Ionicons name="log-out" size={20} color={Colors.primary} />
+                <Text style={styles.profileButtonText}>Logout</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.profileButton}
+                onPress={() => router.push("/add-family-member")}
+              >
+                <Ionicons name="add-circle" size={20} color={Colors.primary} />
+                <Text style={styles.profileButtonText}>Add Family Member</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        )}
+      </View>
+    </SafeAreaView>
   );
 };
 
@@ -162,18 +81,98 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#fff",
     padding: 20,
+    justifyContent: "center",
+    alignItems: "center",
   },
-  fab: {
-    borderWidth: 1,
+  loggedOutContainer: {
+    alignItems: "center",
+  },
+  loggedOutText: {
+    fontSize: 20,
+    fontFamily: "mon-sb",
+    marginBottom: 20,
+  },
+  loginButton: {
+    backgroundColor: Colors.primary,
+    padding: 10,
+    borderRadius: 8,
+    flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
-    width: 70,
+    gap: 8,
+  },
+  loginButtonText: {
+    color: "#fff",
+    fontSize: 16,
+    fontFamily: "mon-sb",
+    marginLeft: 10,
+  },
+  profileContainer: {
+    width: "100%",
+    alignItems: "center",
+    backgroundColor: "rgba(0, 0, 0, 0.05)",
+    borderRadius: 12,
+    padding: 20,
+    position: "relative",
+  },
+  profileImageContainer: {
     position: "absolute",
-    bottom: 40,
-    right: 30,
-    height: 70,
-    backgroundColor: Colors.primary,
-    borderRadius: 100,
+    top: -50,
+    alignItems: "center",
+    justifyContent: "center",
+    width: 100,
+    height: 100,
+    borderRadius: 50,
+    overflow: "hidden",
+    backgroundColor: "#fff",
+    borderWidth: 2,
+    borderColor: Colors.primary,
+  },
+  profileImage: {
+    width: "100%",
+    height: "100%",
+    borderRadius: 50,
+  },
+  profileDetailsContainer: {
+    marginTop: 60,
+    alignItems: "center",
+  },
+  welcomeText: {
+    fontSize: 18,
+    fontFamily: "mon-sb",
+    marginBottom: 10,
+  },
+  descriptionText: {
+    fontSize: 14,
+    fontFamily: "mon",
+    color: Colors.grey,
+    marginBottom: 20,
+    textAlign: "center",
+  },
+  profileButton: {
+    backgroundColor: "#fff",
+    padding: 12,
+    borderRadius: 8,
+    flexDirection: "row",
+    paddingHorizontal: "auto",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 8,
+    width: 300,
+    marginBottom: 10,
+    shadowColor: "#000",
+    shadowOpacity: 0.1,
+    shadowRadius: 6,
+    shadowOffset: {
+      width: 1,
+      height: 10,
+    },
+  },
+  profileButtonText: {
+    marginLeft: 10,
+    fontSize: 16,
+    fontFamily: "mon-sb",
+    color: Colors.primary,
   },
 });
 

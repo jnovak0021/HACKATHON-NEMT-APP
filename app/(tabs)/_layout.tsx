@@ -44,10 +44,10 @@ const Layout = () => {
       <Tabs.Screen
         name="inbox"
         options={{
-          tabBarLabel: "Inbox",
+          tabBarLabel: "Family",
           tabBarIcon: ({ color, size }) => (
             <MaterialCommunityIcons
-              name="message-outline"
+              name="family-tree"
               color={color}
               size={size}
             />

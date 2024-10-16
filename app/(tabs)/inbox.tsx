@@ -19,7 +19,7 @@ const Page = () => {
   const handleSendText = () => {
     const phoneNumber = "9078309507"; // Replace with the actual phone number
     const message =
-      "Hey Mom, don't forget you have a checkup coming up the 9th of December. Do you need me to book you a ride?"; // Replace with your message
+      "Hey Mom, don't forget you have a checkup coming up the 23rd of October at 2:00 PM. Do you need me to do anything to make sure you make it on okay?"; // Replace with your message
     const url = `sms:${phoneNumber}?body=${encodeURIComponent(message)}`;
 
     Linking.openURL(url).catch((err) =>
@@ -50,12 +50,34 @@ const Page = () => {
             </View>
           </View>
           <Text style={styles.upcomingAppointments}>
-            Upcoming Appointments:
+            Mom's Upcoming Appointments:
           </Text>
 
           <View style={styles.appointmentSection}>
             <Text style={styles.appointmentDetails}>
-              Checkup on 12th Dec at 10:00 AM
+              Physiotherapy on 23th Oct at 2:00 PM
+            </Text>
+            <Text style={styles.appointmentLocation}>
+              <Ionicons name="location" size={16} style={styles.icon} /> 456
+              Therapy Ave, Rehab Town
+            </Text>
+            <Text style={[styles.appointmentLocation, { color: "green" }]}>
+              Ride Scheduled @ 1:30 PM{" "}
+            </Text>
+
+            <TouchableOpacity
+              style={styles.rideScheduledButton}
+              onPress={handleSendText}
+            >
+              <Text style={styles.rideScheduledButtonText}>
+                Send Reminder Text
+              </Text>
+              <Ionicons name="chatbox" size={20} color={"#fff"}></Ionicons>
+            </TouchableOpacity>
+          </View>
+          <View style={styles.appointmentSection}>
+            <Text style={styles.appointmentDetails}>
+              Checkup on 25th Oct at 10:00 AM
             </Text>
             <Text style={styles.appointmentLocation}>
               <Ionicons name="location" size={16} style={styles.icon} /> 123
@@ -75,34 +97,6 @@ const Page = () => {
             >
               <Text style={styles.scheduleRideButtonText}>Schedule Ride</Text>
               <Ionicons name="car" size={20} color={"#fff"}></Ionicons>
-            </TouchableOpacity>
-          </View>
-
-          <View style={styles.appointmentSection}>
-            <Text style={styles.appointmentDetails}>
-              Physiotherapy on 15th Dec at 2:00 PM
-            </Text>
-            <Text style={styles.appointmentLocation}>
-              <Ionicons name="location" size={16} style={styles.icon} /> 456
-              Therapy Ave, Rehab Town
-            </Text>
-            <Text style={[styles.appointmentLocation, { color: "green" }]}>
-              Ride Scheduled{" "}
-              <Ionicons
-                name="checkbox-outline"
-                size={16}
-                color={"green"}
-              ></Ionicons>
-            </Text>
-
-            <TouchableOpacity
-              style={styles.rideScheduledButton}
-              onPress={handleSendText}
-            >
-              <Text style={styles.rideScheduledButtonText}>
-                Send Reminder Text
-              </Text>
-              <Ionicons name="chatbox" size={20} color={"#fff"}></Ionicons>
             </TouchableOpacity>
           </View>
         </View>
@@ -150,7 +144,7 @@ const styles = StyleSheet.create({
   },
   absoluteView: {
     position: "absolute",
-    bottom: 10,
+    bottom: 20,
     width: "100%",
     alignItems: "center",
   },
