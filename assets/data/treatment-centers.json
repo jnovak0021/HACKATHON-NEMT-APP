@@ -1,0 +1,143 @@
+{
+  "replicaName": "",
+  "replicaID": "",
+  "transportType": "esriTransportTypeUrl",
+  "responseType": "esriReplicaResponseTypeData",
+  "layers": [
+    {
+      "id": 0,
+      "features": [
+        {
+          "geometry": { "x": 6289188.0297678858, "y": 1883765.4138839841 },
+          "attributes": {
+            "objectid": 1,
+            "hhsa_region": "North Central",
+            "otp_provider_name": "Mission Treatment Services, Inc.*\n8898 Clairemont Mesa Blvd., Suite H, San Diego 92123",
+            "site_name": "Mission Treatment Services, Inc.",
+            "address": "8898 Clairemont Mesa Blvd., Suite H, San Diego 92123",
+            "program_phone_number": "(858) 715-1211",
+            "original_license_date": 1114128000000,
+            "globalid": "{ED9CB597-3131-4C9A-997E-76093D38CDF1}"
+          }
+        },
+        {
+          "geometry": { "x": 6310451.3730678856, "y": 1990651.4153346419 },
+          "attributes": {
+            "objectid": 2,
+            "hhsa_region": "North Inland",
+            "otp_provider_name": "Mission Treatment Services, Inc.*\n161 N. Date Street, Escondido 92025",
+            "site_name": "Mission Treatment Services, Inc.",
+            "address": "161 N. Date Street, Escondido 92025",
+            "program_phone_number": "(760) 745-7786",
+            "original_license_date": 1089158400000,
+            "globalid": "{223B25C5-8273-48DA-B4FD-24DE40F3AC7D}"
+          }
+        },
+        {
+          "geometry": { "x": 6222890.7191213071, "y": 2016209.7297034711 },
+          "attributes": {
+            "objectid": 3,
+            "hhsa_region": "North Coastal",
+            "otp_provider_name": "Mission Treatment Services, Inc. *\n1905 Apple Street, Suite 3, Oceanside 92054",
+            "site_name": "Mission Treatment Services, Inc.",
+            "address": "1905 Apple Street, Suite 3, Oceanside 92054",
+            "program_phone_number": "(760) 547-1280",
+            "original_license_date": 1411516800000,
+            "globalid": "{59C4A475-EBC0-4577-A23C-7325FFF6BBF6}"
+          }
+        },
+        {
+          "geometry": { "x": 6305488.3068785518, "y": 1843684.1085480601 },
+          "attributes": {
+            "objectid": 4,
+            "hhsa_region": "Central",
+            "otp_provider_name": "Eldorado Community Service Center\n1733 Euclid Avenue, San Diego 92105",
+            "site_name": "Eldorado Community Service Center",
+            "address": "1733 Euclid Avenue, San Diego 92105",
+            "program_phone_number": "(619) 263-0433",
+            "original_license_date": 1285200000000,
+            "globalid": "{E62DECA6-36E6-4E3C-BC87-2107144BD9C2}"
+          }
+        },
+        {
+          "geometry": { "x": 6282461.7213701308, "y": 1863519.3133001477 },
+          "attributes": {
+            "objectid": 5,
+            "hhsa_region": "North Central",
+            "otp_provider_name": "San Diego Health Alliance, Inc., Fashion Valley Clinic*\n7545 Metropolitan Drive, San Diego 92108",
+            "site_name": "San Diego Health Alliance, Inc., Fashion Valley Clinic",
+            "address": "7545 Metropolitan Drive, San Diego 92108",
+            "program_phone_number": "(619) 718-9890\nafterhours: (855) 232-5796",
+            "original_license_date": 410227200000,
+            "globalid": "{E1F23E17-7B80-4396-9E7F-479273487020}"
+          }
+        },
+        {
+          "geometry": { "x": 6272567.9586773813, "y": 1999947.4354564846 },
+          "attributes": {
+            "objectid": 6,
+            "hhsa_region": "North Inland",
+            "otp_provider_name": "San Diego Health Alliance, Inc., Capalina Clinic*\n1560 Capalina Road, San Marcos 92069",
+            "site_name": "San Diego Health Alliance, Inc., Capalina Clinic",
+            "address": "1560 Capalina Road, San Marcos 92069",
+            "program_phone_number": "(760) 744-2104\nafterhours: (855) 232-5796",
+            "original_license_date": 410227200000,
+            "globalid": "{1DB70662-13EF-4437-958D-35B20C5F72CA}"
+          }
+        },
+        {
+          "geometry": { "x": 6342597.200180307, "y": 1870506.9709127247 },
+          "attributes": {
+            "objectid": 7,
+            "hhsa_region": "East",
+            "otp_provider_name": "San Diego Health Alliance, Inc., El Cajon Treatment Center*\n234 North Magnolia Avenue, El Cajon 92020",
+            "site_name": "San Diego Health Alliance, Inc., El Cajon Treatment Center",
+            "address": "234 North Magnolia Avenue, El Cajon 92020",
+            "program_phone_number": "(619) 579-8373\nafterhours: (855)232-5796",
+            "original_license_date": 410227200000,
+            "globalid": "{4B277A1E-6BCE-4F85-AFDD-9E8FF00BA1DC}"
+          }
+        },
+        {
+          "geometry": { "x": 6243650.4266175479, "y": 2013369.3984418958 },
+          "attributes": {
+            "objectid": 8,
+            "hhsa_region": "North Coastal",
+            "otp_provider_name": "SOAP MAT, LLC*\n3230 Waring Court, Suite A, Oceanside 92056",
+            "site_name": "SOAP MAT, LLC",
+            "address": "3230 Waring Court, Suite A, Oceanside 92056",
+            "program_phone_number": "(760) 305-7528",
+            "original_license_date": 1331510400000,
+            "globalid": "{6E5C66AC-1BA4-4983-A2E8-1F9DD6F1B4D8}"
+          }
+        },
+        {
+          "geometry": { "x": 6309665.8411743939, "y": 1803388.2065284848 },
+          "attributes": {
+            "objectid": 9,
+            "hhsa_region": "South",
+            "otp_provider_name": "San Diego Treatment Services, LLC, Third Avenue Clinic*\n1155 Third Avenue, Chula Vista 91911",
+            "site_name": "San Diego Treatment Services, LLC, Third Avenue Clinic",
+            "address": "1155 Third Avenue, Chula Vista 91911",
+            "program_phone_number": "(619) 498-8260\nafterhours: (855)232-5796",
+            "original_license_date": 410227200000,
+            "globalid": "{487EA0B2-24E1-4453-B965-B381AB181DC7}"
+          }
+        },
+        {
+          "geometry": { "x": 6304266.7630618066, "y": 1856240.8960984796 },
+          "attributes": {
+            "objectid": 10,
+            "hhsa_region": "Central",
+            "otp_provider_name": "Progressive Medical Specialists, Inc.\n4974 El Cajon Boulevard, Suites A & H, San Diego 92115",
+            "site_name": "Progressive Medical Specialists, Inc.",
+            "address": "4974 El Cajon Boulevard, Suites A & H, San Diego 92115",
+            "program_phone_number": "(619) 286-4600",
+            "original_license_date": 1142380800000,
+            "globalid": "{CC40D47C-F4F8-488F-ACE6-6AFECC2E13AB}"
+          }
+        }
+      ]
+    }
+  ]
+}

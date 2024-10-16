@@ -12,7 +12,7 @@ import { findNodeHandle } from "react-native";
 const categories = [
   {
     category: "All",
-    icon: "style",
+    icon: "map",
   },
   {
     category: "Health Care",
@@ -23,40 +23,20 @@ const categories = [
     icon: "elderly",
   },
   {
-    category: "Designer",
-    icon: "brush",
+    category: "Child Care",
+    icon: "child-care",
   },
   {
-    category: "Male",
-    icon: "person",
+    category: "Residential Facility",
+    icon: "home",
   },
   {
-    category: "Female",
-    icon: "person",
+    category: "Treatment Center",
+    icon: "healing",
   },
   {
-    category: "Plus Size",
-    icon: "plus-one",
-  },
-  {
-    category: "Beauty",
-    icon: "palette",
-  },
-  {
-    category: "Diverse",
-    icon: "public",
-  },
-  {
-    category: "International",
-    icon: "public",
-  },
-  {
-    category: "Creative",
-    icon: "create",
-  },
-  {
-    category: "Development",
-    icon: "trending-up",
+    category: "Cool Zone",
+    icon: "ac-unit",
   },
 ];
 
