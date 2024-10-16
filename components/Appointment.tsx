@@ -14,6 +14,7 @@ import Animated, { FadeOutLeft, FadeInRight } from "react-native-reanimated";
 import Colors from "@/constants/Colors";
 import { Feature } from "@/interfaces/service";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
+
 import {
   BottomSheetFlatList,
   BottomSheetFlatListMethods,
@@ -23,33 +24,57 @@ import appointmentsData  from "@/assets/data/appointments.json"; // Adjust the p
 import { AppointmentData } from "@/interfaces/appointment";
 
 const Appointment = ({ data }: { data: AppointmentData }) => {
-    return (
-       <TouchableOpacity>
-        <Animated.View
-            style={styles.listing}
-            entering={FadeInRight}
-                exiting={FadeOutLeft}>
-        <View style={styles.row}>
-            <View style= {styles.lefthalf}>
-                <Text style={styles.name}>{data.providerName}</Text>
-                <Text>{data.specialty}</Text>
-                <Text>{data.hospitalName}</Text>
+  return (
+      <TouchableOpacity>
+          <Animated.View
+              style={styles.listing}
+              entering={FadeInRight}
+              exiting={FadeOutLeft}>
+              <View style={styles.row}>
+                  <View>
+                      <Text style={styles.name}>{data.providerName}</Text>
+                      <Text style={styles.type}>{data.specialty}</Text>
+                      <Text style={styles.address}>{data.hospitalName}</Text>
 
-                <View style={styles.row}>
-                    <Text>{data.date} @</Text>
-                    <Text>{data.time}</Text>
-                </View>
-            </View>
-            <View style={styles.righthalf}>
-                <Text>Ride Booked: {data.rideBooked ? 'Yes' : 'No'}</Text>
-                
-            </View>
-        </View>
-        </Animated.View>
+                      <View style={styles.row}>
+                          <Text style={styles.address}>{data.date} @ </Text>
+                          <Text style={styles.address}>{data.time}</Text>
+                      </View>
+                  </View>
+              </View>
+
+              {/* Moved Ride Status above the scheduleContainer */}
+              <View style={styles.rideStatusContainer}>
+                  {data.rideBooked ? (
+                      <Text style={[styles.appointmentLocation, {fontSize: 18}, { color: "green" }]}>
+                          Ride Scheduled{" "}
+                          <Ionicons name="checkmark-circle" size={16} color={"green"} />
+                      </Text>
+                  ) : (
+                      <Text style={[styles.appointmentLocation, {fontSize: 18}, { color: "red" }]}>
+                          No Ride Scheduled{" "}
+                          <Ionicons name="warning-outline" size={16} color={"red"} />
+                      </Text>
+                  )}
+              </View>
+
+              {/* Full width scheduleContainer for the button */}
+              <View style={styles.scheduleContainer}>
+                  <TouchableOpacity
+                      style={[
+                          styles.scheduleRideButtonFullWidth,
+                          { backgroundColor: data.rideBooked ? Colors.hospitalColor : Colors.primary } // Change background color conditionally
+                      ]}>
+                      <Text style={styles.scheduleRideButtonText}>
+                          {data.rideBooked ? "Reschedule Ride" : "Schedule Ride"}
+                      </Text>
+                      <Ionicons name="car" size={20} color={"#fff"} />
+                  </TouchableOpacity>
+              </View>
+          </Animated.View>
       </TouchableOpacity>
-    );
-  };
-
+  );
+};
 // Type the JSON data with the AppointmentData interface
 const AppointmentsList = () => {
     return (
@@ -61,113 +86,84 @@ const AppointmentsList = () => {
     );
   };
 
-  /*
-const AppointmentList = () => {
-    const appointments: AppointmentData[] = [
-        {
-            id: '1',
-            date: '2024-10-16',
-            time: '10:30 AM',
-            hospitalName: 'General Hospital',
-            providerName: 'Dr. Smith',
-            specialty: 'Cardiology',
-            rideBooked: true,
-            location: {
-                address: '1234 Health St.',
-                city: 'San Diego',
-                state: 'CA',
-                zip: '92101',
-            },
-        },
-        {
-            id: '2',
-            date: '2024-10-18',
-            time: '2:00 PM',
-            hospitalName: 'City Medical Center',
-            providerName: 'Dr. Johnson',
-            specialty: 'Neurology',
-            rideBooked: false,
-            location: {
-                address: '4321 Wellness Ave.',
-                city: 'San Diego',
-                state: 'CA',
-                zip: '92102',
-            },
-        },
-        // Add more appointments as needed
-    ];
-}
-*/
 
-
-const styles = StyleSheet.create({
+  const styles = StyleSheet.create({
     listing: {
-      padding: 16,
-      gap: 10,
-      marginVertical: 16,
-      backgroundColor: "rgba(128, 128, 128, 0.1)", // Semi-transparent background color
-      borderRadius: 10,
-      marginHorizontal: 8,
+        padding: 16,
+        gap: 10,
+        marginVertical: 16,
+        backgroundColor:"white", // Semi-transparent background color
+        borderRadius: 10,
+        marginHorizontal: 8,
+        shadowColor: "#000",
+        shadowOpacity: 0.1,
+        shadowRadius: 6,
+        shadowOffset: {
+          width: 1,
+          height: 10,
+        },
     },
     iconContainer: {
-      flexDirection: "row",
-      gap: 10,
-      alignItems: "center",
+        flexDirection: "row",
+        gap: 10,
+        alignItems: "center",
     },
     iconBackground: {
-      width: 60,
-      height: 60,
-      backgroundColor: Colors.primary,
-      borderRadius: 8,
-      justifyContent: "center",
-      alignItems: "center",
+        width: 60,
+        height: 60,
+        backgroundColor: Colors.primary,
+        borderRadius: 8,
+        justifyContent: "center",
+        alignItems: "center",
     },
     container: {
         flex: 1,               // Ensures the container takes up the full screen space
         padding: 16,           // Adds padding to create space around the edges
         backgroundColor: '#f5f5f5',  // Light background color to make the content stand out
         justifyContent: 'flex-start', // Starts content at the top
-      },
+        borderRadius: 30, 
+    },
     textContainer: {
-      flex: 1,
-      // more spacing between top and bottom of items
-      rowGap: 4,
+        flex: 1,
+        // more spacing between top and bottom of items
+        rowGap: 4,
     },
     locationContainer: {
-      flexDirection: "row",
-      alignItems: "center",
-      gap: 4,
+        flexDirection: "row",
+        alignItems: "center",
+        gap: 4,
     },
     name: {
-      fontSize: 16,
-      fontFamily: "mon-sb",
-      color: "#1E7C8C", // Ensure the text color is fully opaque
+        fontSize: 20,
+        fontFamily: "mon-sb",
+        color: "#1E7C8C", // Ensure the text color is fully opaque
     },
     type: {
-      fontSize: 16,
-      fontFamily: "mon",
-      color: "black", // Ensure the text color is fully opaque
+        fontSize: 18,
+        fontFamily: "mon",
+        color: "black", // Ensure the text color is fully opaque
     },
     address: {
-      fontFamily: "mon",
-      color: "black", // Ensure the text color is fully opaque
+        fontSize: 16,
+        fontFamily: "mon",
+        color: "black", // Ensure the text color is fully opaque
     },
     icon: {
-      color: "black", // Ensure the icon color is fully opaque
+        color: "black", // Ensure the icon color is fully opaque
     },
     info: {
-      textAlign: "center",
-      fontFamily: "mon-sb",
-      fontSize: 16,
-      marginTop: 4,
+        textAlign: "center",
+        fontFamily: "mon-sb",
+        fontSize: 16,
+        marginTop: 4,
     },
     btn: {
-      backgroundColor: Colors.primary,
-      padding: 8,
-      borderRadius: 30,
-      flexDirection: "row",
-      marginHorizontal: "auto",
-      alignItems: "center",
+        backgroundColor: Colors.primary,
+        padding: 8,
+        borderRadius: 30,
+        flexDirection: "row",
+        marginHorizontal: "auto",
+        alignItems: "center",
     },
     row: {
         flexDirection: 'row',  // Aligns the Text components horizontally
@@ -181,7 +177,40 @@ const styles = StyleSheet.create({
     righthalf: {
         flex: 1,
         paddingLeft: 8,
-    }
-  });
+    },
+    appointmentLocation: {
+        fontSize: 14,
+        fontFamily: "mon",
+        color: Colors.grey,
+        marginBottom: 8,
+    },
+    rideStatusContainer: {
+        marginBottom: 0,      // Space between the status and the scheduleContainer
+    },
+    scheduleContainer: {
+      backgroundColor: "rgba(128, 128, 128, 0.1)",
+        padding: 16,
+        borderRadius: 10,
+        alignItems: "center", // Center align everything horizontally
+        justifyContent: "center", // Center align everything vertically
+        marginTop: 8, // Adds space above the container
+    },
+    scheduleRideButtonFullWidth: {
+        backgroundColor: Colors.primary,
+        padding: 12,
+        borderRadius: 8,
+        flexDirection: "row",
+        alignItems: "center",
+        justifyContent: "center",
+        gap: 8,
+        width: '100%',   // Full width for the button
+    },
+    scheduleRideButtonText: {
+        color: "#fff",
+        fontSize: 16,
+        fontFamily: "mon-sb",
+    },
+});
+
 
 export default AppointmentsList;

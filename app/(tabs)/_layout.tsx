@@ -26,9 +26,9 @@ const Layout = () => {
       <Tabs.Screen
         name="favorites"
         options={{
-          tabBarLabel: "Favorites",
+          tabBarLabel: "Appointments",
           tabBarIcon: ({ color, size }) => (
-            <Ionicons name="heart-outline" color={color} size={size} />
+            <Ionicons name="calendar" color={color} size={size} />
           ),
         }}
       />

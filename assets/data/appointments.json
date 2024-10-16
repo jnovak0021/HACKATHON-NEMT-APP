@@ -2,12 +2,12 @@
   "appointments": [
     {
       "id": "1",
-      "date": "2024-10-20",
-      "time": "14:30",
+      "date": "Oct 23rd",
+      "time": "2:30",
       "hospitalName": "Saint Mary's Hospital",
       "providerName": "Dr. John Smith",
       "specialty": "Cardiology",
-      "rideBooked": true,
+      "rideBooked": false,
       "location": {
         "address": "123 Health St",
         "city": "San Diego",
@@ -17,12 +17,12 @@
     },
     {
       "id": "2",
-      "date": "2024-10-25",
+      "date": "Oct 25th",
       "time": "09:00",
       "hospitalName": "General Hospital",
       "providerName": "Dr. Jane Doe",
       "specialty": "Pediatrics",
-      "rideBooked": false,
+      "rideBooked": true,
       "location": {
         "address": "789 Medical Ave",
         "city": "San Diego",
