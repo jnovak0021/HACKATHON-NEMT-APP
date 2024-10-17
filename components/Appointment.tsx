@@ -63,12 +63,16 @@ const Appointment = ({ data }: { data: AppointmentData }) => {
                   <TouchableOpacity
                       style={[
                           styles.scheduleRideButtonFullWidth,
-                          { backgroundColor: data.rideBooked ? Colors.hospitalColor : Colors.primary } // Change background color conditionally
+                          { backgroundColor: data.rideBooked ? "#bbb" : Colors.primary } // Change background color conditionally
                       ]}>
-                      <Text style={styles.scheduleRideButtonText}>
+                      <Text style={[
+                                styles.scheduleRideButtonText,
+                                {color: data.rideBooked ? "#999" : "#fff"}
+                        
+                      ]}>
                           {data.rideBooked ? "Reschedule Ride" : "Schedule Ride"}
                       </Text>
-                      <Ionicons name="car" size={20} color={"#fff"} />
+                      <Ionicons name="car" size={20} color = {data.rideBooked ? "#999" : "#fff" } />
                   </TouchableOpacity>
               </View>
           </Animated.View>
@@ -136,7 +140,7 @@ const AppointmentsList = () => {
     name: {
         fontSize: 20,
         fontFamily: "mon-sb",
-        color: "#1E7C8C", // Ensure the text color is fully opaque
+        color: Colors.primary, // Ensure the text color is fully opaque
     },
     type: {
         fontSize: 18,
@@ -188,12 +192,9 @@ const AppointmentsList = () => {
         marginBottom: 0,      // Space between the status and the scheduleContainer
     },
     scheduleContainer: {
-      backgroundColor: "rgba(128, 128, 128, 0.1)",
-        padding: 16,
         borderRadius: 10,
         alignItems: "center", // Center align everything horizontally
         justifyContent: "center", // Center align everything vertically
-        marginTop: 8, // Adds space above the container
     },
     scheduleRideButtonFullWidth: {
         backgroundColor: Colors.primary,
