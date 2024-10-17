@@ -1,0 +1,61 @@
+{
+    "nemt_services": [
+      {
+        "name": "Uber Health",
+        "contact_info": {
+          "phone": "N/A",
+          "email": "support@health.uber.com",
+          "website": "https://www.uberhealth.com"
+        },
+        "description": "Uber Health offers rides for patients to and from medical appointments using Uber’s rideshare network. It provides an easy-to-use platform for healthcare providers to book and manage rides for patients.",
+        "services": [
+          "Non-Emergency Medical Transportation",
+          "Wheelchair-accessible rides",
+          "HIPAA-compliant transportation"
+        ]
+      },
+      {
+        "name": "Lyft Healthcare",
+        "contact_info": {
+          "phone": "N/A",
+          "email": "N/A",
+          "website": "https://www.lyft.com/healthcare"
+        },
+        "description": "Lyft Healthcare partners with health plans and providers to offer patients safe and reliable rides to medical appointments. The service focuses on increasing access to healthcare while lowering transportation-related barriers.",
+        "services": [
+          "Non-Emergency Medical Transportation",
+          "Flexible ride scheduling",
+          "Patient transportation coordination"
+        ]
+      },
+      {
+        "name": "Modivcare",
+        "contact_info": {
+          "phone": "1-877-917-8166",
+          "email": "support@mymodivcare.com",
+          "website": "https://www.modivcare.com"
+        },
+        "description": "Modivcare is a leading provider of integrated supportive care, offering NEMT services, remote patient monitoring, and in-home care. It primarily serves Medicaid and Medicare members, aiming to improve health outcomes by addressing social determinants of health.",
+        "services": [
+          "Non-Emergency Medical Transportation",
+          "Remote Patient Monitoring",
+          "In-Home Personal Care"
+        ]
+      },
+      {
+        "name": "Veyo",
+        "contact_info": {
+          "phone": "(855) 478-7350",
+          "email": "info@veyo.com",
+          "website": "https://www.veyo.com"
+        },
+        "description": "Veyo is a San Diego-based NEMT provider that focuses on Medicaid beneficiaries. It uses independent, CPR-trained drivers to provide safe and reliable transportation for patients needing medical care. Veyo operates across several states and also offers logistics support for healthcare organizations.",
+        "services": [
+          "Non-Emergency Medical Transportation",
+          "Wheelchair-accessible rides",
+          "HIPAA-compliant driver training",
+          "Real-time trip tracking"
+        ]
+      }
+    ]
+  }
