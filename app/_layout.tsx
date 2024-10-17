@@ -125,6 +125,16 @@ function RootLayoutNav() {
           ),
         }}
       />
+      <Stack.Screen
+        name="(modals)/nemt"
+        options={{
+          headerTitle: "Contact NEMT",
+          headerTitleStyle: { fontFamily: "mon-b" },
+
+          presentation: "transparentModal",
+          animation: "fade",
+        }}
+      />
       {/*
 
       <Stack.Screen

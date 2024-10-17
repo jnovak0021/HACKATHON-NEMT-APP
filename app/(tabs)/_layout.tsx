@@ -32,15 +32,7 @@ const Layout = () => {
           ),
         }}
       />
-      <Tabs.Screen
-        name="applications"
-        options={{
-          tabBarLabel: "Applications",
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="document-outline" color={color} size={size} />
-          ),
-        }}
-      />
+
       <Tabs.Screen
         name="inbox"
         options={{
