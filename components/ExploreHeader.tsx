@@ -23,10 +23,6 @@ const categories = [
     icon: "elderly",
   },
   {
-    category: "Child Care",
-    icon: "child-care",
-  },
-  {
     category: "Residential Facility",
     icon: "home",
   },

@@ -56,6 +56,13 @@ const Page = () => {
               </TouchableOpacity>
               <TouchableOpacity
                 style={styles.profileButton}
+                onPress={() => router.push("/(modals)/insurance")}
+              >
+                <Ionicons name="heart-half" size={20} color={Colors.primary} />
+                <Text style={styles.profileButtonText}>Update Insurance</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.profileButton}
                 onPress={() => signOut()}
               >
                 <Ionicons name="log-out" size={20} color={Colors.primary} />

@@ -7,10 +7,9 @@ import {
   TouchableOpacity,
   StyleSheet,
 } from "react-native";
-import { Stack, useRouter } from "expo-router";
+import { Stack, useRouter, Href } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import Colors from "@/constants/Colors";
-import MomImage from "@/assets/images/mom-image.png";
 import { Linking } from "react-native";
 
 const Page = () => {
@@ -25,6 +24,11 @@ const Page = () => {
     Linking.openURL(url).catch((err) =>
       console.error("Error opening SMS app", err)
     );
+  };
+  const handlePress = () => {
+    const href: Href = { pathname: "/(modals)/nemt" };
+    router.push(href);
+    console.log("Appointment clicked");
   };
 
   return (
@@ -93,7 +97,7 @@ const Page = () => {
             </Text>
             <TouchableOpacity
               style={styles.scheduleRideButton}
-              onPress={handleSendText}
+              onPress={handlePress}
             >
               <Text style={styles.scheduleRideButtonText}>Schedule Ride</Text>
               <Ionicons name="car" size={20} color={"#fff"}></Ionicons>
@@ -103,10 +107,7 @@ const Page = () => {
       </View>
 
       <View style={styles.absoluteView}>
-        <TouchableOpacity
-          style={styles.btn}
-          onPress={() => router.push("/(modals)/general")}
-        >
+        <TouchableOpacity style={styles.btn}>
           <Text
             style={{
               fontFamily: "mon-sb",

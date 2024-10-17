@@ -1,4 +1,4 @@
-import { Text, View, StyleSheet, TextInput } from "react-native";
+import { Text, View, StyleSheet, TextInput, Image } from "react-native";
 import React from "react";
 import { Tabs, useRouter } from "expo-router";
 import { useWarmUpBrowser } from "@/hooks/useWarmUpBrowser";
@@ -84,6 +84,10 @@ const Page = () => {
 
   return (
     <View style={styles.container}>
+      <Image
+        source={require("@/assets/images/logo.jpeg")} // Replace with your image URL
+        style={styles.image}
+      />
       <TextInput
         autoCapitalize="none"
         placeholder="Email"
@@ -114,7 +118,6 @@ const Page = () => {
           }}
         ></View>
       </View>
-
       <View style={{ gap: 22 }}>
         <TouchableOpacity
           style={styles.btnOutline}
@@ -150,6 +153,12 @@ const Page = () => {
   );
 };
 const styles = StyleSheet.create({
+  image: {
+    width: 150,
+    height: 150,
+    marginBottom: 30,
+    marginHorizontal: "auto",
+  },
   container: {
     flex: 1,
     backgroundColor: "#fff",

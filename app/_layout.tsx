@@ -84,19 +84,11 @@ function RootLayoutNav() {
 
   //New useEffect for handling onboarding
 
-  // useEffect(() => {
-  //   if (isLoaded && !isSignedIn) return;
-  //   const checkOnboarding = async () => {
-  //     const onboarded = await loadOnboarding();
-  //     console.log("Onboarding status in useEffect", onboarded);
-  //     if (!onboarded) {
-  //       console.log("Onboarding not complete");
-  //       router.push("/(modals)/onboardingA");
-  //     }
-  //   };
-
-  //   checkOnboarding();
-  // }, [isLoaded, isSignedIn, userId]);
+  useEffect(() => {
+    if (isLoaded && isSignedIn) {
+      router.push("/(modals)/insurance");
+    }
+  }, [isLoaded, isSignedIn]);
 
   const loadOnboarding = async () => {
     const token = await getToken({ template: "supabase" });

@@ -111,7 +111,6 @@ const Page = () => {
     const combinedList = [
       ...normalizedElderCareFacilities,
       ...normalizedHospitals,
-      ...normalizedChildCareFacilities,
       ...normalizedCoolZones,
       ...normalizedResidentialFacilities,
       ...normalizedTreatmentCenters,

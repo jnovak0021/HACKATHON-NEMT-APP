@@ -28,7 +28,7 @@ const Appointment = ({ data }: { data: AppointmentData }) => {
   const router = useRouter();
 
   const handlePress = () => {
-    const href: Href = { pathname: "/(modals)/insurance" };
+    const href: Href = { pathname: "/(modals)/nemt" };
     router.push(href);
     console.log("Appointment clicked");
   };
@@ -59,7 +59,9 @@ const Appointment = ({ data }: { data: AppointmentData }) => {
               style={[
                 styles.appointmentLocation,
                 { fontSize: 18 },
-                { color: "green" },]}>
+                { color: "green" },
+              ]}
+            >
               Ride Scheduled{" "}
               <Ionicons name="checkmark-circle" size={16} color={"green"} />
             </Text>
@@ -87,17 +89,21 @@ const Appointment = ({ data }: { data: AppointmentData }) => {
                 backgroundColor: data.rideBooked ? "#bbb" : Colors.primary,
               },
             ]}
-            
           >
-            <Text style={[styles.scheduleRideButtonText,
-                      {color: data.rideBooked ? "#aaa" : "white"}, // Conditionally change the text color
-
-
-
-            ]}>
+            <Text
+              style={[
+                styles.scheduleRideButtonText,
+                { color: data.rideBooked ? "white" : "white" }, // Conditionally change the text color
+              ]}
+            >
               {data.rideBooked ? "Reschedule Ride" : "Schedule Ride"}
             </Text>
-            <Ionicons name="car" size={20} color={"#fff"} style={{color: data.rideBooked ? "#aaa" : "white"}} />
+            <Ionicons
+              name="car"
+              size={20}
+              color={"#fff"}
+              style={{ color: data.rideBooked ? "white" : "white" }}
+            />
           </TouchableOpacity>
         </View>
       </Animated.View>
