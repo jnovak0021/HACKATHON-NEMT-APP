@@ -135,6 +135,16 @@ function RootLayoutNav() {
           animation: "fade",
         }}
       />
+      <Stack.Screen
+        name="(modals)/insurance"
+        options={{
+          headerTitle: "Select Insurance",
+          headerTitleStyle: { fontFamily: "mon-b" },
+
+          presentation: "transparentModal",
+          animation: "fade",
+        }}
+      />
       {/*
 
       <Stack.Screen
