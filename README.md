@@ -1,4 +1,4 @@
-### 2024 BIG DATA HACKATHON PROPOSAL FORM
+### 2024 BIG DATA HACKATHON PROPOSAL FORM - FIRST PLACE WINNER
 
 #### Team Number: `107`  
 
@@ -7,9 +7,13 @@
 #### Your team's hackathon idea in One sentence:
 ##### `Develop a centralized mobile app for elderly San Diego residents aged 65+ to manage Non-Emergency Medical Transportation (NEMT) to appointments, offering a user-friendly interface with transparent ride costs and insurance coverage.`
 
-#### A visual
-![bigdatahackathon4sd](https://github.com/BigDataForSanDiego/bigdataforsandiego.github.io/blob/main/templates/img/bigdatahackathon_sd_2024.png?raw=true "Big Data Hackathon for San Diego 2024")
-<img height="10%" width="50%" alt="HDMA" src="https://github.com/BigDataForSanDiego/bigdataforsandiego.github.io/blob/main/templates/img/hdma2.png?raw=true"> 
+#### App Screenshots
+<img width="300" alt="image" src="https://github.com/user-attachments/assets/90ad53c7-a7bd-430d-963c-5d7f37015c43">
+<img width="300" alt="image" src="https://github.com/user-attachments/assets/938371c8-fb40-4be9-9d56-50cf50230bbd">
+<img width="300" alt="image" src="https://github.com/user-attachments/assets/39522d66-e935-4b07-be26-4d80a810854d">
+
+
+
 
 <!--
 #### Theme: Enhancing Healthcareâ€™s Digital Front Door
